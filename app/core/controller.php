@@ -3,11 +3,23 @@
 class Controller {
 
     public function view($path, $data = []) {
-        if(file_exists("../app/views/". $path . ".php")) {
-            include "../app/views/". $path . ".php";
+        if(file_exists("../app/views/". THEME . $path . ".php")) {
+            include "../app/views/". THEME . $path . ".php";
+        } else {
+            //die;
+            include "../app/views/" . THEME . "404.php";
         }
     }
+
+    public function load_model($model) {
+        if(file_exists("../app/models/". strtolower($model) . ".model.php")) {
+            include "../app/models/". strtolower($model) . ".model.php";
+            return $a = new $model();
+        } 
+        return false;
+    }
 }
+
 
 
 ?>

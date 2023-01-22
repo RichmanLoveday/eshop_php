@@ -12,6 +12,7 @@ class App {
         // URL Router design 
         // 1) Check for controller exist
         if(file_exists("../app/controllers/". strtolower($url[0] . ".php"))) {
+          //  die;
             $this->controller = strtolower($url[0]);
             unset($url[0]);
         }
@@ -20,7 +21,7 @@ class App {
         $this->controller = new $this->controller;
 
         // 2) check if method exist
-        $url[1] = isset($url[1]) ? strtolower($url[1]) : 'index';
+        $url[1] = isset($url[1]) ? strtolower($url[1]) : '';
         if(isset($url[1])) {
             if(method_exists($this->controller, $url[1])) {
                 $this->method = $url[1];
@@ -30,7 +31,7 @@ class App {
 
         // Store parameters
         $this->params = (count($url) > 0) ? $url : ["home"];
-        //show($this->params);
+        // show($this->params);
         // call method function
         call_user_func_array([$this->controller, $this->method], $this->params);
         
