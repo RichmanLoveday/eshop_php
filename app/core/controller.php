@@ -1,5 +1,5 @@
 <?php
-
+namespace app\core;
 class Controller {
 
     public function view($path, $data = []) {
@@ -18,6 +18,11 @@ class Controller {
         } 
         return false;
     }
+
+    public function redirect($link) {
+        header('Location: '. ROOT . strtolower($link));
+        die();
+    } 
 }
 
 

@@ -30,6 +30,17 @@
     </head>
     <!--/head-->
 
+    <style>
+    .error {
+        background-color: red;
+        width: 100%;
+        margin-top: -5px;
+        margin-bottom: 5px;
+        padding: 5px;
+        color: white;
+    }
+    </style>
+
     <body>
         <header id="header">
             <!--header-->
@@ -41,7 +52,8 @@
                             <div class="contactinfo">
                                 <ul class="nav nav-pills">
                                     <li><a href="#"><i class="fa fa-phone"></i> +2 95 01 88 821</a></li>
-                                    <li><a href="#"><i class="fa fa-envelope"></i> info@domain.com</a></li>
+                                    <li><a href="#"><i class="fa fa-envelope"></i> info@domain.com
+                                            <?= $_SESSION['user_url'] ?></a></li>
                                 </ul>
                             </div>
                         </div>

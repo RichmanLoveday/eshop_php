@@ -166,6 +166,6 @@
     <script src="<?= ASSETS ?>js/price-range.js"></script>
     <script src="<?= ASSETS ?>js/jquery.prettyPhoto.js"></script>
     <script src="<?= ASSETS ?>js/main.js"></script>
-    
-</body>
-</html>
+    </body>
+
+    </html>

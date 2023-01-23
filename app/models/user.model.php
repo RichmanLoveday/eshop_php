@@ -1,66 +1,120 @@
 <?php
-
+use app\core\Database;
 Class User {
-    private $error = '';
-
+    public array $errors = [];
+   
     public function signup($POST) {
-        //show($POST);
+        // connection
+        $db = Database::getInstance();
+
+        // show($POST);
         $data = [];
 
-        $data['name']       = $_POST['name'];
-        $data['email']      = $_POST['email'];
-        $data['password']   = trim($_POST['password']);
-        $conPass            = trim($_POST['confirm_password']);
+        $data['name']       = $POST['name'];
+        $data['email']      = $POST['email'];
+        $data['password']   = trim($POST['password']);
+        $conPass            = trim($POST['confirm_password']);
 
         // Vaidate email
-        if(empty($data['email']) || !preg_match("/^[a-zA-Z_-]+@[a-zA-Z]+.[a-zA-Z]+$/", $data['email'])) {
-            $this->error .= "Please enter a valid email <br>";
+        if(empty($data['email']) || !preg_match("/^[0-9a-zA-Z_-]+@[a-zA-Z]+.[a-zA-Z]+$/", $data['email'])) {
+            $this->errors['email'] = "Please enter a valid email <br>";
+        } else {
+            // check if email exist
+            $sql = "SELECT * FROM users WHERE email = :email limit 1";
+            $check = $db->read($sql, ['email' => $data['email']]);
+            // show($check);
+
+            if(is_array($check)) {
+                $this->errors['email'] = "That email is already in use";
+            }
         }
 
         // validate name
         if(empty($data['name']) || !preg_match("/^[a-zA-Z]+$/", $data['name'])) {
-            $this->error .= "Please enter a valid name <br>";
+            $this->errors['name'] = "Please enter a valid name <br>";
         }
 
         // Validate password
-        if($data['password'] !== $conPass) {
-            $this->error .= "Password do not match <br>";
+        if(empty($data['password'])) {
+            $this->errors['password'] = "Please enter this filled <br>";
+        }elseif(strlen($data['password']) < 4) {
+            $this->errors['password'] = "Passwod must be atleat 4 character long <br>";
+        } elseif($data['password'] !== $conPass) {
+            $this->errors['conpass'] = "Password do not match <br>";
+        } else {
+            echo '';
         }
 
-        if(strlen($data['password']) < 4) {
-            $this->error .= "Passwod must be atleat 4 character long <br>";
+
+        // Check URL
+        $data['url_address'] = get_random_string(60);
+        $sql = "SELECT * FROM users WHERE url_address = :url_address limit 1";
+        $check = $db->read($sql, ['url_address' => $data['url_address']]);
+
+        if(is_array($check)) {
+            $data['url_address'] = get_random_string(60);
         }
-
-        // show($data);
-        // echo $this->error;
-        // die;
-
 
         // Save to database
-        if($this->error === "") {
+        if(empty($this->errors)) {
             $data['rank'] = "customer";
-            $data['url_address'] = get_random_string(60);
             $data['date'] = date("Y-m-d H:i:s");
+            $data['password'] = hash('sha1', $data['password']);
 
-            // show($data);
-            // die;
+            // Insert into database
+            $query = "INSERT INTO users (url_address, name, email, password, rank, date) values (:url_address, :name, :email, :password, :rank, :date)";
+            $db->write($query, $data);
 
-            $query = "INSERT INTO users (url_address, name, email, password, rank) values (:url_address, :name, :email, :password, :rank)";
-            $db = Database::getInstance();
-            $result = $db->write($query, $data);
-            show($result);
-            if($result) {
-                die;
-                header("Location: " . ROOT . "login");
-                die;
-            }
+            return true;
         }
+
+        return false;
         
     }
 
-    public function login($Post) {
+    public function login($POST ) {
+        // connection
+        $db = Database::getInstance();
 
+        // show($POST);
+        $data = [];
+
+        $data['email']      = $POST['email'];
+        $data['password']   = $POST['password'];
+
+        // Vaidate email
+        if(empty($data['email'])) {
+            $this->errors['email'] = "Please fill in this field <br>";
+        } 
+        
+        if(empty($data['password'])) {
+            $this->errors['password'] = "Please fill in this field <br>";
+
+        }elseif(strlen($data['password']) < 4) {
+            $this->errors['password'] = "Passwod must be atleat 4 character long <br>";
+
+        } else {
+            echo '';
+        }
+
+
+        if(empty($this->errors)) {
+            
+            // check if details exist
+            $sql = "SELECT * FROM users WHERE email = :email AND password = :password limit 1";
+            $row = $db->read($sql, ['email' => $data['email'], 'password' => hash("sha1", $data['password'])]);
+    
+            if(is_array($row)) {
+               return $row;
+               
+            } else {
+                $this->errors['email/password'] = "Password / Email is incorrect";
+            }
+            
+        }
+        return false;
     }
+
 
     public function get_user($url) {
 

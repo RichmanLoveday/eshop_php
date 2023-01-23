@@ -17,7 +17,22 @@ function get_random_string(int $lenght): string {
 
     }
     return $text;
-    
+
+}
+
+function print_error(array $data, string $errType) {
+    if(isset($data['errors'][$errType])) {
+        return "<div class=error>".$data['errors'][$errType]."</div>";
+    } 
+}
+
+function get_var(string $key, $default = NULL) {
+    if(isset($_POST[$key])) {
+        return $_POST[$key];
+    }elseif(isset($_GET[$key])) {
+        return $_GET[$key];
+    } 
+    return $default;
 }
 
 
