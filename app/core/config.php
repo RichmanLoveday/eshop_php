@@ -21,8 +21,9 @@ $path = $_SERVER['REQUEST_SCHEME']. "://" . $_SERVER['SERVER_NAME'] . $_SERVER['
 $path = str_replace('index.php', '', $path);
 
 define('ROOT', $path);
-define('ASSETS', $path . "assets/");
-define('IMAGES', $path . "assets/images/");
 define("THEME", 'eshop/');
+define('ASSETS', $path . "assets/");
+define('IMAGES', $path . "assets/". THEME . "/images/");
+
 
 ?>

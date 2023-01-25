@@ -1,4 +1,7 @@
 app/views/ecommerce
 app/views/eshop
 
-public/assets
+app/public/assets
+
+app/public/assets/eshop/gitadmin/
+

@@ -116,8 +116,15 @@ Class User {
     }
 
 
-    public function get_user($url) {
+    public function get_user_row($USER) {
+        $url = $USER->url_address;
+        $query = "SELECT * FROM users WHERE url_address = :url limit 1";
+        $db = Database::getInstance();      // Database instance
+        $row = $db->read($query, [':url' => $url]);
 
+        if(!$row) return false;
+        
+        return $row[0];
     }
 
 

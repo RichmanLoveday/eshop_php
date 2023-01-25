@@ -19,7 +19,6 @@ Class Signup extends Controller {
                 //show($data);
             }
 
-            
         } 
         $this->view("signup", $data);
     }

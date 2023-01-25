@@ -1,173 +1,179 @@
-<!DOCTYPE php>
-<php lang="en">
+<?php
 
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <title><?= $data['page_title'] ?> | E-Shopper</title>
-        <link href="<?= ASSETS ?>css/bootstrap.min.css" rel="stylesheet">
-        <link href="<?= ASSETS ?>css/font-awesome.min.css" rel="stylesheet">
-        <link href="<?= ASSETS ?>css/prettyPhoto.css" rel="stylesheet">
-        <link href="<?= ASSETS ?>css/price-range.css" rel="stylesheet">
-        <link href="<?= ASSETS ?>css/animate.css" rel="stylesheet">
-        <link href="<?= ASSETS ?>css/main.css" rel="stylesheet">
-        <link href="<?= ASSETS ?>css/responsive.css" rel="stylesheet">
+use app\models\Auth;
 
-        <!--[if lt IE 9]>
-<script src="js/php5shiv.js"></script>
-<script src="js/respond.min.js"></script>
-<![endif]-->
-        <link rel="shortcut icon" href="images/ico/favicon.ico">
-        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57-precomposed.png">
-        <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
-    </head>
-    <!--/head-->
+?>
 
-    <style>
-    .error {
-        background-color: red;
-        width: 100%;
-        margin-top: -5px;
-        margin-bottom: 5px;
-        padding: 5px;
-        color: white;
-    }
-    </style>
+<!DOCTYPE html>
+<html lang="en">
 
-    <body>
-        <header id="header">
-            <!--header-->
-            <div class="header_top">
-                <!--header_top-->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="contactinfo">
-                                <ul class="nav nav-pills">
-                                    <li><a href="#"><i class="fa fa-phone"></i> +2 95 01 88 821</a></li>
-                                    <li><a href="#"><i class="fa fa-envelope"></i> info@domain.com
-                                            <?= $_SESSION['user_url'] ?></a></li>
-                                </ul>
-                            </div>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title><?= $data['page_tittle'] ?> | E-Shopper</title>
+    <link href="<?= ASSETS . THEME ?>css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?= ASSETS . THEME ?>css/font-awesome.min.css" rel="stylesheet">
+    <link href="<?= ASSETS . THEME ?>css/prettyPhoto.css" rel="stylesheet">
+    <link href="<?= ASSETS . THEME ?>css/price-range.css" rel="stylesheet">
+    <link href="<?= ASSETS . THEME ?>css/animate.css" rel="stylesheet">
+    <link href="<?= ASSETS . THEME ?>css/main.css" rel="stylesheet">
+    <link href="<?= ASSETS . THEME ?>css/responsive.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="images/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57-precomposed.png">
+
+
+</head>
+<style>
+.error {
+    background-color: red;
+    width: 100%;
+    margin-top: -5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    color: white;
+}
+</style>
+
+<body>
+    <header id="header">
+        <!--header-->
+        <div class="header_top">
+            <!--header_top-->
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="contactinfo">
+                            <ul class="nav nav-pills">
+                                <li><a href="#"><i class="fa fa-phone"></i> +2 95 01 88 821</a></li>
+                                <li><a href="#"><i class="fa fa-envelope"></i> info@domain.com</a></li>
+                                <?php if(isset($data['user_data'])): ?>
+                                <li><a href="#" class="mr-10"><i class="fa fa-user">
+                                            <?=   $data['user_data']->name?></i>
+                                        <?php endif ?>
+                            </ul>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="social-icons pull-right">
-                                <ul class="nav navbar-nav">
-                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                                </ul>
-                            </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="social-icons pull-right">
+                            <ul class="nav navbar-nav">
+                                <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                                <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                                <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--/header_top-->
+        </div>
+        <!--/header_top-->
 
-            <div class="header-middle">
-                <!--header-middle-->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="logo pull-left">
-                                <a href="index"><img src="<?= IMAGES ?>home/logo.png" alt="" /></a>
-                            </div>
-                            <div class="btn-group pull-right">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default dropdown-toggle usa"
-                                        data-toggle="dropdown">
-                                        USA
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">Canada</a></li>
-                                        <li><a href="#">UK</a></li>
-                                    </ul>
-                                </div>
-
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default dropdown-toggle usa"
-                                        data-toggle="dropdown">
-                                        DOLLAR
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">Canadian Dollar</a></li>
-                                        <li><a href="#">Pound</a></li>
-                                    </ul>
-                                </div>
-                            </div>
+        <div class="header-middle">
+            <!--header-middle-->
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="logo pull-left">
+                            <a href="index"><img src="<?= IMAGES ?>home/logo.png" alt="" /></a>
                         </div>
-                        <div class="col-sm-8">
-                            <div class="shop-menu pull-right">
-                                <ul class="nav navbar-nav">
-                                    <li><a href="#"><i class="fa fa-user"></i> Account</a></li>
-                                    <li><a href="#"><i class="fa fa-star"></i> Wishlist</a></li>
-                                    <li><a href="checkout"><i class="fa fa-crosshairs"></i> Checkout</a></li>
-                                    <li><a href="cart"><i class="fa fa-shopping-cart"></i> Cart</a></li>
-                                    <li><a href="login"><i class="fa fa-lock"></i> Login</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--/header-middle-->
-
-            <div class="header-bottom">
-                <!--header-bottom-->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-9">
-                            <div class="navbar-header">
-                                <button type="button" class="navbar-toggle" data-toggle="collapse"
-                                    data-target=".navbar-collapse">
-                                    <span class="sr-only">Toggle navigation</span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
+                        <div class="btn-group pull-right">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle usa"
+                                    data-toggle="dropdown">
+                                    USA
+                                    <span class="caret"></span>
                                 </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Canada</a></li>
+                                    <li><a href="#">UK</a></li>
+                                </ul>
                             </div>
-                            <div class="mainmenu pull-left">
-                                <ul class="nav navbar-nav collapse navbar-collapse">
-                                    <li><a href="index" class="active">Home</a></li>
-                                    <li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
-                                        <ul role="menu" class="sub-menu">
-                                            <li><a href="shop">Products</a></li>
-                                            <li><a href="product-details">Product Details</a></li>
-                                            <li><a href="checkout">Checkout</a></li>
-                                            <li><a href="cart">Cart</a></li>
-                                            <li><a href="login">Login</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="dropdown"><a href="#">Blog<i class="fa fa-angle-down"></i></a>
-                                        <ul role="menu" class="sub-menu">
-                                            <li><a href="blog">Blog List</a></li>
-                                            <li><a href="blog-single">Blog Single</a></li>
-                                        </ul>
-                                    </li>
-                                    <li><a href="404">404</a></li>
-                                    <li><a href="contact-us">Contact</a></li>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle usa"
+                                    data-toggle="dropdown">
+                                    DOLLAR
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Canadian Dollar</a></li>
+                                    <li><a href="#">Pound</a></li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="search_box pull-right">
-                                <input type="text" placeholder="Search" />
-                            </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="shop-menu pull-right">
+                            <ul class="nav navbar-nav">
+                                <?= Auth::logged_in() ? "<li><a href=".ROOT."profile><i class='fa fa-user'></i> Account</a></li>" : ''?>
+                                <li><a href="#"><i class="fa fa-star"></i> Wishlist</a></li>
+                                <li><a href="checkout"><i class="fa fa-crosshairs"></i> Checkout</a></li>
+                                <li><a href="cart"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+                                <?php if(!Auth::logged_in()): ?>
+                                <li><a href="<?=ROOT?>login"><i class="fa fa-lock"></i> Login</a></li>
+                                <?php else: ?>
+                                <li><a href="<?=ROOT?>logout"><i class="fa fa-lock"></i> Logout</a></li>
+                                <?php endif ?>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--/header-bottom-->
-        </header>
-        <!--/header-->
+        </div>
+        <!--/header-middle-->
+
+        <div class="header-bottom">
+            <!--header-bottom-->
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                data-target=".navbar-collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div class="mainmenu pull-left">
+                            <ul class="nav navbar-nav collapse navbar-collapse">
+                                <li><a href="index" class="active">Home</a></li>
+                                <li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
+                                    <ul role="menu" class="sub-menu">
+                                        <li><a href="shop">Products</a></li>
+                                        <li><a href="product-details">Product Details</a></li>
+                                        <li><a href="checkout">Checkout</a></li>
+                                        <li><a href="cart">Cart</a></li>
+                                        <li><a href="login">Login</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown"><a href="#">Blog<i class="fa fa-angle-down"></i></a>
+                                    <ul role="menu" class="sub-menu">
+                                        <li><a href="blog">Blog List</a></li>
+                                        <li><a href="blog-single">Blog Single</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="404">404</a></li>
+                                <li><a href="contact-us">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="search_box pull-right">
+                            <input type="text" placeholder="Search" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--/header-bottom-->
+    </header>
+    <!--/header-->

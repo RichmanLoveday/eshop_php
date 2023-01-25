@@ -6,6 +6,7 @@ class Login extends Controller  {
     public function index() {
         $data = [];
         $data['page_title'] = 'Login';
+
         
         if($_SERVER['REQUEST_METHOD'] === "POST") {
             //show($_POST);
@@ -14,15 +15,8 @@ class Login extends Controller  {
             $row = $user->login($_POST);        // Get the row data when login
 
             if(is_array($row) && count($row) > 0) {
-                // session_destroy();
-                show($row);
-                // die;
-                $url_address = $row[0]->url_address;
-                show($url_address);
-                show(Auth::class);
-                // die;
-                Auth::authenticate($url_address);       // Store user url_address
-                
+                $USER = $row[0];
+                Auth::authenticate($USER);       // Store user row
                 $this->redirect('home');        // Redirect page
                 
             } else {
