@@ -29,6 +29,14 @@ Class Database {
         return $instance = new self();
         // return $a::$con;
     }
+
+
+    public static function newInstance() {
+        
+        return $instance = new self();
+        // return $a::$con;
+    }
+    
     
 
     /*
@@ -62,7 +70,7 @@ Class Database {
     // Write
     public function write(string $query, array $data = []):bool {
         $stm = self::$con->prepare($query);
-        show($data);
+        //show($data);
         $result = $stm->execute($data);
 
         // check if executed
