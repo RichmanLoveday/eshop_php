@@ -3,13 +3,13 @@ use app\core\Controller;
 use app\models\Auth;
 use app\models\User;
 
-class Ajax extends Controller {
+class Ajax_category extends Controller {
 
     public function index() {
         // Collect data from axios or ajax
         $fetch =  file_get_contents("php://input");
         $fetch = json_decode($fetch);
-        
+        // show($fetch);
         $data = [];
         // show($fetch);
 
@@ -32,14 +32,14 @@ class Ajax extends Controller {
                 
                 if($cats) {
                     $data = [];
-                    $cats = $category->get_all_data($fetch);
+                    $cats = $category->get_all_data('categories');
                     
                     // Data to be sent to javascript
                     $data['data'] = $category->make_table($cats);
                     $data['message'] = $category->success_message;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "add_new";
-                   
+                    
                     echo json_encode($data);
                 }
             }
@@ -63,7 +63,7 @@ class Ajax extends Controller {
                 
                 if($cats) {
                     $data = [];
-                    $cats = $category->get_all_data();
+                    $cats = $category->get_all_data('categories');
                     
                     // Data to be sent to javascript
                     $data['data'] = $category->make_table($cats);
@@ -91,8 +91,7 @@ class Ajax extends Controller {
 
             // Delete category controller
             if($fetch->data_type === 'delete_row') {
-             
-               //  show($fetch);
+            
                 $id = $fetch->id;
                 $cat_name = $fetch->category;
                 
@@ -103,7 +102,7 @@ class Ajax extends Controller {
                 // Data to be sent to javascript
 
                 if($delete) {
-                    $cats = $category->get_all_data($fetch);        // Get all data
+                    $cats = $category->get_all_data('categories');        // Get all data
                     $data = [];
                     
                     // Data to be sent to javascript
@@ -118,7 +117,8 @@ class Ajax extends Controller {
 
 
             if($fetch->data_type === 'disable_row') {
-                //  // show($fetch);
+                // show($fetch);
+                // die;
                 $id = $fetch->id;
                 $state = $fetch->current_state;
                 
@@ -128,7 +128,7 @@ class Ajax extends Controller {
 
                 // Data to be sent to javascript
                 if($update) {
-                    $cats = $category->get_all_data();        // Get all data
+                    $cats = $category->get_all_data('categories');        // Get all data
 
                     $data = [];
                     $data['message'] = $category->success_message;
@@ -138,7 +138,6 @@ class Ajax extends Controller {
                     $data['current_state'] = $fetch->current_state;
                 }
                
-                
 
                 echo json_encode($data);
             }
@@ -148,7 +147,7 @@ class Ajax extends Controller {
                 $id = $fetch->id;
 
                 $category = $this->load_model('Category');
-                $cats = $category->get_single_data($id);
+                $cats = $category->get_single_data('categories', $id);
 
                 if($cats) {
                     $data = [];

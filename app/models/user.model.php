@@ -1,7 +1,8 @@
 <?php
 use app\core\Database;
-Class User {
-    public array $errors = [];
+use app\core\Models;
+
+Class User extends Models {
    
     public function signup($POST) {
         // connection

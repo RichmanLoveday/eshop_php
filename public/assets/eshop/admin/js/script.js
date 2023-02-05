@@ -1,29 +1,32 @@
 // const axios = require('axios');
-const btnAddCategory = document.querySelector('.btn_add_category');
-const modal = document.querySelector('.myModal');
-const editModal = document.querySelector('.edit_modal');
 const success_modal = document.querySelector('.success_modal');
 const modal_message = document.querySelector('.modal_message');
 const overlay = document.querySelector('.overlay');
-const btnCloseModal = document.querySelector('.close_modal');
-const inputCategoryName = document.querySelector('.category_name');
-const inputEditCategoryName = document.querySelector('.edit_category_name');
-const sendData = document.querySelector('.sendData');
-const form = document.querySelector('.form');
-const tableBody = document.querySelector('.table_body');
+const btnCloseModal = document.querySelector('.close_modal') || null;
+const btnCloseEditModal = document.querySelector('.close_edit_modal') || null;
 const errorFiled = document.querySelector('.errorFild');
+const tableBody = document.querySelector('.table_body');
+
+
+
+const form = document.querySelector('.form');
 const rowDelete = document.querySelector('.row_delete');
 const rowEdit = document.querySelector('.row_edit');
+let handle_result;
 
 // console.log(btnAddCategory);
-
 // Open modal and overlay
-const show_modal = function (modal) {
+const show_modal = function (modal, input = null) {
+    console.log('Yesssss');
+    console.log(modal)
+    console.log(overlay);
+    console.log(input);
     modal.classList.toggle('show');
     overlay.classList.toggle('show');
 
     // focus input
-    inputCategoryName.focus();
+    if (input === null) return;
+    input.focus()
 
     form.addEventListener('onsubmit', function (e) {
         console.log(e);
@@ -32,14 +35,13 @@ const show_modal = function (modal) {
 };
 
 // Close modal
-const close_modal = function () {
+const close_modal = function (modal, overlay, input = null,) {
+    console.log(modal);
     modal.classList.remove('show');
-    editModal.classList.remove('show');
     overlay.classList.remove('show');
-    success_modal.classList.remove('show');
 
-    console.log(inputCategoryName);
-    inputCategoryName.value = '';
+    console.log(input);
+    if (!input === null) input.value = '';
 
     // clear error messageh
     errorFiled.classList.remove('error');
@@ -47,138 +49,35 @@ const close_modal = function () {
 };
 
 
-btnAddCategory.addEventListener('click', show_modal.bind(this, modal));
-overlay.addEventListener('click', close_modal);
-btnCloseModal.addEventListener('click', close_modal);
-
-
-const handle_result = function (result) {
-    if (result !== "") {
-        const obj = result;
-        console.log(obj);
-        // console.log('Yes')
-        if (obj.data_type === 'add_new') {
-            if (typeof obj.message_type !== 'undefined') {
-                if (obj.message_type === 'info') {
-                    close_modal();
-                    modal_message.textContent = obj.message;
-                    console.log(modal_message);
-                    console.log(modal_message.textContent);
-                    show_modal(success_modal);
-
-                    setTimeout(() => {
-                        close_modal();
-                    }, 5000);
-
-                    // Add datas to the table
-                    tableBody.innerHTML = obj.data;
-                } else {
-                    alert(obj.message);
-                }
-            }
-        }
-
-        if (obj.data_type === 'edit_row') {
-            if (typeof obj.message_type !== 'undefined') {
-                if (obj.message_type === 'info') {
-                    close_modal();
-                    alert(obj.message);
-
-                    // Add datas to the table
-                    tableBody.innerHTML = obj.data;
-                } else {
-                    alert(obj.message);
-                }
-            }
-        }
-
-        if (obj.data_type === 'delete_row') {
-            if (typeof obj.message_type !== 'undefined') {
-                if (obj.message_type === 'info') {
-                    modal_message.textContent = obj.message;
-                    console.log(modal_message);
-                    console.log(modal_message.textContent);
-                    show_modal(success_modal);
-
-                    // Set timeout to close modal
-                    setTimeout(() => {
-                        close_modal();
-                    }, 5000);
-
-                    // Update table
-                    tableBody.innerHTML = obj.data;
-                } else {
-                    alert(obj.message);
-                }
-            }
-        }
-
-
-        if (obj.data_type === 'disable_row') {
-            if (typeof obj.message_type !== 'undefined') {
-                if (obj.message_type === 'info') {
-                    // alert(obj.message);
-
-                    // Update table
-                    tableBody.innerHTML = obj.data;
-                } else {
-                    alert(obj.message);
-                }
-            }
-        }
-
-
-        if (obj.data_type === 'edit_row') {
-            if (typeof obj.message_type !== 'undefined') {
-                if (obj.message_type === 'info') {
-                    // alert(obj.message);
-
-                    // Update table
-                    tableBody.innerHTML = obj.data;
-                } else {
-                    alert(obj.message);
-                }
-            }
-        }
-
-
-        if (obj.data_type === 'edit_cat') {
-            if (typeof obj.message_type !== 'undefined') {
-                if (obj.message_type === 'info') {
-                    modal_message.textContent = obj.message;
-                    console.log(modal_message);
-                    console.log(modal_message.textContent);
-                    show_modal(success_modal);
-
-                    // Set timeout to close modal
-                    setTimeout(() => {
-                        close_modal();
-                    }, 5000);
-
-                    // Update table
-                    tableBody.innerHTML = obj.data;
-                } else {
-                    alert(obj.message);
-                }
-            }
-        }
-
-    }
-
-};
-
-const send_data = async function (url, data = {}) {
+// Send result ajax
+const send_data = async function (url, data = {}, handle_result) {
+    // console.log(url)
+    const form = new FormData();
+    form.append('data', data)
     const res = await axios.post(url, data, {
         "Content-Type": "multipart/form-data"
     });
 
-    // console.log(res.data);
+    console.log(res);
 
     handle_result(res.data);
 };
 
 
+const send_data_files = async function (url, data, handle_result) {
+    // console.log(url)
+    const res = await axios.post(url, data, {
+        "Content-Type": "multipart/form-data"
+    });
+
+    console.log(res);
+
+    handle_result(res.data);
+};
+
+// Get result ajax
 const get_data = async function (url, data = {}) {
+    console.log(data);
     const res = await axios.post(url, data, {
         "Content-Type": "multipart/form-data"
     });
@@ -186,38 +85,136 @@ const get_data = async function (url, data = {}) {
     // handle_result(res.data);
 };
 
-const collect_data = function (url, input_name, errMsg) {
-    if (input_name.value.trim() === '' || !isNaN(input_name.value)) {
-        // alert(errMsg);
+const collect_data = function (input, errMsg, data_type, handle_result, e) {
+    //console.log('clicked');
 
-        // add error field
-        errorFiled.classList.toggle('error');
-        errorFiled.textContent = errMsg;
 
-        setTimeout(() => {
+    if (data_type === 'add_category') {
+        const url = e.target.dataset.url;
+        if (input.value.trim() === '' || !isNaN(input.value)) {
+            // alert(errMsg);
+
+            // add error field
+            errorFiled.classList.toggle('error');
+            errorFiled.textContent = errMsg;
+
+            setTimeout(() => {
+                errorFiled.classList.remove('error');
+                errorFiled.textContent = '';
+            }, 2000)
+
+        } else {
+            // clear error field
             errorFiled.classList.remove('error');
-            errorFiled.textContent = '';
-        }, 2000)
+            errorFiled.textContent = ''
 
-    } else {
-        // clear error field
-        errorFiled.classList.remove('error');
-        errorFiled.textContent = ''
+            // Clean data and send to ajax
+            const data = input.value.trim();
+            console.log(data, url);
+            send_data(url, { data: data, data_type: data_type }, handle_result);
+        }
+    }
 
-        // Clean data and send to ajax
-        const data = inputCategoryName.value.trim();
 
-        send_data(url, { data: data, data_type: 'add_category' });
+    if (data_type === 'add_product') {
+        const data = new FormData();
+        const url = e.target.dataset.url;
+        let productName, productQuantity, productCategory, productPrice, productImage, productImage2, productImage3, productImage4;
+
+        // Loop through array of input and store values in variables
+        console.log(input.productImage3);
+        console.log(Object.keys(input));
+        Object.keys(input).forEach(val => {
+            if (val === 'productName') productName = input.productName;
+            if (val === 'productQuantity') productQuantity = input.productQuantity;
+            if (val === 'productCategory') productCategory = input.productCategory;
+            if (val === 'productPrice') productPrice = input.productPrice;
+            if (val === 'productImage') productImage = input.productImage;
+            if (val === 'productImage2') productImage2 = input.productImage2;
+            if (val === 'productImage3') productImage3 = input.productImage3;
+            if (val === 'productImage4') productImage4 = input.productImage4;
+        });
+
+        console.log(productName, productQuantity, productCategory, productPrice, productImage);
+        let err = false;
+
+        // Validate inputs
+        if (productName.value.trim() === '' || !isNaN(productName.value)) {
+            productName.classList.add('errInput')
+            err = true;
+
+        } else {
+            productName.classList.remove('errInput');
+        }
+
+        if (productQuantity.value.trim() === '') {
+            productQuantity.classList.add('errInput')
+
+        } else {
+            productQuantity.classList.remove('errInput');
+        }
+
+        if (productCategory.value.trim() === '') {
+            productCategory.classList.add('errInput')
+            err = true;
+
+        } else {
+            productCategory.classList.remove('errInput');
+        }
+
+        if (productPrice.value.trim() === '') {
+            productPrice.classList.add('errInput')
+            err = true;
+
+        } else {
+            productPrice.classList.remove('errInput');
+        }
+
+        if (productImage.files.length === 0) {
+            productImage.classList.add('errInput')
+            err = true;
+
+        } else {
+            productImage.classList.remove('errInput');
+        }
+
+        console.log(url, err);
+        if (!err) {
+
+            // form data to be sent to post
+            data.append('description', productName.value.trim());
+            data.append('quantity', productQuantity.value.trim());
+            data.append('category', productCategory.value.trim());
+            data.append('price', productPrice.value.trim());
+            data.append('image', productImage.files[0]);
+            data.append('data_type', 'add_product');
+
+            // Check other images
+            if (productImage2.files.length > 0) {
+                data.append('image2', productImage2.files[0]);
+            }
+
+            if (productImage3.files.length > 0) {
+                data.append('image3', productImage3.files[0]);
+            }
+
+            if (productImage4.files.length > 0) {
+                data.append('image4', productImage4.files[0]);
+            }
+
+            // Send files throuh ajax
+            send_data_files(url, data, handle_result);
+        }
     }
 };
 
 
 // Collect edited data
-const collect_edit_data = function (url, input_name, errMsg) {
+const collect_edit_data = function (url, input, errMsg, handle_result, e) {
     console.log(url);
-    console.log(input_name);
+    console.log(input);
     console.log(errMsg)
-    if (input_name.value.trim() === '' || !isNaN(input_name.value)) {
+    if (input.value.trim() === '' || !isNaN(input.value)) {
         // alert(errMsg);
 
         // add error field
@@ -235,46 +232,15 @@ const collect_edit_data = function (url, input_name, errMsg) {
         errorFiled.textContent = ''
 
         // Clean data and send to ajax
-        const data = inputEditCategoryName.value.trim();
-        const id = inputEditCategoryName.dataset.rowid;
+        const data = input.value.trim();
+        const id = input.dataset.rowid;
 
-        send_data(url, { id: id, data: data, data_type: 'edit_category' });
+        send_data(url, { id: id, data: data, data_type: 'edit_category' }, handle_result);
     }
 };
 
 
-// Edit and delete Row
-const edit_row = async function (url, id, e) {
-    const data = await get_data(url, { id: id, data_type: 'get_cat_data' });
-    console.log(data);
-    console.log(data.input);
-    inputEditCategoryName.value = data.input;
-    console.log(inputEditCategoryName.value);
-    inputEditCategoryName.dataset.rowid = id;
-    console.log(inputEditCategoryName.dataset.rowid);
-    show_modal(editModal);
-
-};
 
 
-const delete_row = function (url, state, e) {
-    const rowId = e.target.dataset.rowid;
-    const category_name = e.target.parentElement.parentElement.firstElementChild.textContent;
-
-    if (!confirm("Are you sure you want to delete this row?")) return;
-
-    // console.log(rowId);
-    send_data(url, { id: rowId, category: category_name, data_type: 'delete_row' });
-};
-
-
-// Disbale or enable row
-const disable_row = function (url, state, e) {
-    const rowId = e.target.dataset.rowid;
-
-    console.log(rowId);
-
-    send_data(url, { id: +rowId, data_type: 'disable_row', current_state: state });
-};
 
 
