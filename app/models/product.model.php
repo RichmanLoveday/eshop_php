@@ -87,11 +87,73 @@ Class Product extends Models {
     }
 
     // Edit a category
-    public function edit($id, $description) {
+    public function edit($DATA, $FILES) {
         $DB = Database::newInstance();
-        $id = (int) $id;
 
-        $arr = ['id' => $id, 'description' => $description];
+
+        $arr['id'] = (int) $DATA->id;
+        $arr['description'] = ucwords($DATA->description);
+        $arr['quantity'] = ucwords($DATA->quantity);
+        $arr['price'] = ucwords($DATA->price);
+
+        $error = false;
+        // check if theirs an error in input
+        if(!preg_match("/^[a-zA-Z ]+$/", trim($arr['description']))) {
+            $this->errors['errorDescription'] = 'Please input a description name';
+            $error = true;
+        } 
+
+        if(!is_numeric($arr['quantity'])) {
+            $this->errors['errorQty'] = 'Please enter a valid quantity';
+            $error = true;
+        } 
+
+        if(!is_numeric($arr['price'])) {
+            $this->errors['errorPrice'] = 'Please enter a valid price';
+            $error = true;
+        } 
+ 
+
+        // Validate inmages
+        // Check for images images in data if set
+        $arr["image"] = isset($DATA->image) ? $DATA->image : '';
+        $arr["image2"] = isset($DATA->image2) ? $DATA->image2 : '';
+        $arr["image3"] = isset($DATA->image3) ? $DATA->image3 : '';
+        $arr["image4"] = isset($DATA->image4) ? $DATA->image4 : '';
+
+
+        // Loop to check for new files uploaded
+        // Rules for for 
+        $allowed[] = "image/jpeg";
+        $size = 10;
+        $size = ($size * 1024 * 1024);
+        
+        $dir = "uploads/";
+        
+        if(!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+
+        foreach($FILES as $key => $img_row) {
+            if($img_row['error'] == 0 && in_array($img_row['type'], $allowed)) {
+                if($img_row['size'] > $size) {
+                    $this->errors['image_size'] = $key . " is bigger than the required size.";
+                    return false;
+                }
+
+                $destination = $dir . $img_row['name'];
+                move_uploaded_file($img_row['tmp_name'], $destination);
+                $arr[$key] = $destination;
+                
+            } 
+        }
+        
+
+        show($DATA);
+        show($FILES);
+        show($arr);
+        die;
         $query = "UPDATE products SET description = :description WHERE id = :id limit 1";
         $check = $DB->write($query, $arr);
 

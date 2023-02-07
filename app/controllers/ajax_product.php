@@ -10,18 +10,16 @@ class Ajax_product extends Controller {
         $fetch = '';
         $fetch =  file_get_contents("php://input");         // Get input files
         $fetch = json_decode($fetch);
-       
-        // Check if server request method is post
-        if(is_object($fetch) && isset($fetch->data_type) && ($fetch->data_type === 'add_product')) {
+
+        // check if type != get
+        if(!(is_object($fetch) && ($fetch->type === 'get'))) {
             $fetch = (object) $_POST;
         }
-
-        show($fetch);
-        die;
+       
         
-        
+        // show($_FILES);
+        // show($fetch); die;
         $data = [];
-        // show($data);
 
         // Add product controller+
         if(is_object($fetch) && isset($fetch->data_type)) {
@@ -30,7 +28,7 @@ class Ajax_product extends Controller {
                 // add new product
                 // load model
                 $product = $this->load_model('product');
-                $cats = $product->create($fetch, $_FILES);
+                $cats = $product->edit($fetch, $_FILES);
 
                 if(!$cats) {
                     $data['message'] = $product->errors;
@@ -62,15 +60,22 @@ class Ajax_product extends Controller {
 
                 $product = $this->load_model('Product');
                 $product_data = $product->get_single_data('products', $id);
-                show($product_data); die;
+
+                // get cat single data
+                $cats = $product->get_single_data('categories',$product_data->category);
+                //show($product_data); die;
                 if($product_data) {
                     $data = [];
 
-                    $data['current_state'] = $product_data->disabled;
-                    $data['input'] = $product_data->category;
                     $data['id'] = $product_data->id;
-                    $data['data_type'] = 'data_row';
-                    
+                    $data['description'] = $product_data->description;
+                    $data['category'] = $cats->category;
+                    $data['price'] = $product_data->price;
+                    $data['quantity'] =  $product_data->quantity;
+                    $data['image'] =  $product_data->image;
+                    $data['image2'] =  !empty($product_data->image2) ? $product_data->image2 : null;
+                    $data['image3'] =  !empty($product_data->image3) ? $product_data->image3 : null;
+                    $data['image4'] =  !empty($product_data->image4) ? $product_data->image4 : null;
                 }
                 echo json_encode($data);
             }
@@ -78,10 +83,10 @@ class Ajax_product extends Controller {
             if($fetch->data_type === 'edit_product') {
                 // add new product
                 // load model
-                // show($data);
-                
+                // show($fetch);
+                // die;
                 $product = $this->load_model('product');
-                $cats = $product->edit($fetch->id, $fetch->data);
+                $cats = $product->edit($fetch, $_FILES);
 
                 if(!$cats) {
                     $data['message'] = $product->errors;
