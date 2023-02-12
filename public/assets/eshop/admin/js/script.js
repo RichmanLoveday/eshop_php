@@ -21,19 +21,49 @@ const show_modal = function (modal, input = null) {
     console.log(modal)
     console.log(overlay);
     //console.log(input);
+
     modal.classList.toggle('show');
     overlay.classList.toggle('show');
 
 
-    // focus input
-    if (input === null) return;
-    input.focus()
+    // focus categoory
+    if (modal.classList.contains('myModal') || modal.classList.contains('edit_category')) {
+        input.focus();
+        btnCloseModal?.addEventListener('click', close_modal.bind(this, catModal, overlay, inputCategoryName));
+        btnCloseEditModal?.addEventListener('click', close_modal.bind(this, editModal, overlay, inputCategoryName));
+
+        overlay.addEventListener('click', close_modal.bind(this, catModal, overlay, input));
+        overlay.addEventListener('click', close_modal.bind(this, editModal, overlay, input));
+    }
+
+    // for product category
+    if (modal.classList.contains('product_modal')) {
+
+        modal.addEventListener('click', function (e) {
+            console.log(e)
+            if (!e.target.classList.contains('add')) return;
+
+            const image = e.target;         // store click image element
+            console.log(image.name);
+
+            display_image(image, input.imagesAdd);
+        });
+
+        overlay.addEventListener('click', close_modal.bind(this, productModal, overlay, input));
+        btnCloseModal?.addEventListener('click', close_modal.bind(this, productModal, overlay, input));
+    }
+
+    if (modal.classList.contains('edit_product_modal')) {
+        overlay.addEventListener('click', close_modal.bind(this, editProductModal, overlay, editInput));
+        btnCloseModal?.addEventListener('click', close_modal.bind(this, editProductModal, overlay, editInput));
+    }
 
 
     form.addEventListener('onsubmit', function (e) {
         console.log(e);
         e.preventDefault();
     });
+
 };
 
 // Close modal
@@ -45,7 +75,7 @@ const close_modal = function (modal, overlay, input = null,) {
 
         modal.classList.remove('show');
         overlay.classList.remove('show');
-        input.value = ''
+        input !== null ? input.value = '' : null;
 
         return;
     }
@@ -54,7 +84,23 @@ const close_modal = function (modal, overlay, input = null,) {
     if (modal.classList.contains('edit_product_modal') || modal.classList.contains('product_modal')) {
         modal.classList.remove('show');
         overlay.classList.remove('show');
-        console.log(input)
+        console.log(Object.values(input));
+        if (input !== null) {
+            Object.values(input).forEach((input, index) => {
+                if (index !== 8) {
+                    // clear value
+                    input.value = '';
+                    input.classList.remove('errInput');
+                } else {
+                    input.forEach(ele => {
+                        // Hide preview images
+                        ele.classList.add('hide');
+                    })
+                }
+            });
+        }
+
+        return;
     }
 
     // for sucess modal
@@ -108,30 +154,31 @@ const get_data = async function (url, data = {}) {
 
 const collect_data = function (input, errMsg, data_type, handle_result, e) {
     //console.log('clicked');
-
+    console.log(input);
     if (data_type === 'add_category') {
         const url = e.target.dataset.url;
-        if (input.value.trim() === '' || !isNaN(input.value)) {
-            // alert(errMsg);
+        const parent = input.parent.value;
+        let category;
+        let err = false;
 
-            // add error field
-            errorFiled.classList.toggle('error');
-            errorFiled.textContent = errMsg;
-
-            setTimeout(() => {
-                errorFiled.classList.remove('error');
-                errorFiled.textContent = '';
-            }, 2000)
-
+        if (input.category.value.trim() === '' || !isNaN(input.category.value)) {
+            input.category.classList.toggle('errInput');
+            err = true;
         } else {
-            // clear error field
-            errorFiled.classList.remove('error');
-            errorFiled.textContent = ''
+            input.category.classList.remove('errInput');
+            category = input.category.value.trim();
+        }
 
-            // Clean data and send to ajax
-            const data = input.value.trim();
-            console.log(data, url);
-            send_data(url, { data: data, data_type: data_type }, handle_result);
+        if (!isNaN(input.parent)) {
+            input.parent.classList.toggle('errInput');
+            err = true;
+        } else {
+            input.parent.classList.remove('errInput');
+        }
+
+        // Send data to ajax
+        if (!err) {
+            send_data(url, { category: category, parent: parent, data_type: 'add_category' }, handle_result);
         }
     }
 
@@ -214,6 +261,7 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) {
             // Send files throuh ajax
             send_data_files(url, form, handle_result);
         }
+
     }
 };
 
@@ -222,28 +270,32 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) {
 const collect_edit_data = function (url, input, data_type, errMsg, handle_result, e) {
 
     if (data_type === 'edit_category') {
-        if (input.value.trim() === '' || !isNaN(input.value)) {
-            // alert(errMsg);
+        const id = input.category_edit.dataset.rowid;
+        let category;
+        const parent = input.parent_edit.value;
+        let err = false;
 
-            // add error field
-            errorFiled.classList.toggle('error');
-            errorFiled.textContent = errMsg;
-
-            setTimeout(() => {
-                errorFiled.classList.remove('error');
-                errorFiled.textContent = '';
-            }, 2000)
-
+        if (input.category_edit.value.trim() === '' || !isNaN(input.category_edit.value)) {
+            input.category_edit.classList.toggle('errInput');
+            err = true;
         } else {
-            // clear error field
-            errorFiled.classList.remove('error');
-            errorFiled.textContent = ''
+            input.category_edit.classList.remove('errInput');
+            category = input.category_edit.value.trim();
+            console.log(err);
+        }
 
-            // Clean data and send to ajax
-            const data = input.value.trim();
-            const id = input.dataset.rowid;
+        if (!isNaN(input.parent_edit)) {
+            input.parent_edit.classList.toggle('errInput');
+            err = true;
+            console.log(err);
+        } else {
+            input.parent_edit.classList.remove('errInput');
+        }
 
-            send_data(url, { id: id, data: data, data_type: 'edit_category' }, handle_result);
+        console.log(err);
+        // Send data to ajax
+        if (!err) {
+            send_data(url, { id: id, category_edit: category, parent_edit: parent, data_type: 'edit_category' }, handle_result);
         }
     }
 
@@ -298,6 +350,7 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
 
 
         console.log(url, err);
+        console.log(input);
         if (!err) {
             const data = new FormData();
             // form data to be sent to post

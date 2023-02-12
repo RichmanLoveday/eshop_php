@@ -28,7 +28,7 @@ class Ajax_product extends Controller {
                 // add new product
                 // load model
                 $product = $this->load_model('product');
-                $cats = $product->edit($fetch, $_FILES);
+                $cats = $product->create($fetch, $_FILES);
 
                 if(!$cats) {
                     $data['message'] = $product->errors;
@@ -92,7 +92,7 @@ class Ajax_product extends Controller {
                     $data['message'] = $product->errors;
                     $data['message_type'] = 'error';
                     $data['data'] = '';
-                    $data['data_type'] = "edit_cat";
+                    $data['data_type'] = "edit_product";
                     echo json_encode($data);
                 }
                 
@@ -104,7 +104,7 @@ class Ajax_product extends Controller {
                     $data['data'] = $product->make_table($cats);
                     $data['message'] = $product->success_message;
                     $data['message_type'] = 'info';
-                    $data['data_type'] = "edit_cat";
+                    $data['data_type'] = "edit_product";
             
                     echo json_encode($data);
                 }

@@ -15,10 +15,11 @@ Class Product extends Models {
         $arr['price'] = ucwords($DATA->price);
         $arr['date'] = date("Y-m-d H:i:s");
         $arr['user_url'] = $_SESSION['USER']->url_address;
+        $arr['slag'] =  $this->str_to_url($DATA->description);
 
         $error = false;
         // check if theirs an error in input
-        if(!preg_match("/^[a-zA-Z ]+$/", trim($arr['description']))) {
+        if(!preg_match("/^[a-zA-Z 0-9._\-,]+$/", trim($arr['description']))) {
             $this->errors['errorDescription'] = 'Please input a description name';
             $error = true;
         } 
@@ -36,6 +37,16 @@ Class Product extends Models {
         if(!is_numeric($arr['category'])) {
             $this->errors['errorCat'] = 'Please enter a valid category';
             $error = true;
+        } 
+
+
+        // make sure slag is unique
+        $query = "SELECT slag FROM products WHERE slag = :slag limit 1";
+        $check = $DB->read($query, ['slag' => $arr['slag']]);
+
+        // check if query ran
+        if($check) {
+            $arr['slag'] .= '-'.rand(0, 99999);
         } 
 
         // Check for files
@@ -69,10 +80,11 @@ Class Product extends Models {
                 
             } 
         }
-
+        
+        
         // If no error at all insert 
         if(!$error) {
-            $query = "INSERT INTO products (description, price, quantity, category, date, user_url, image, image2, image3, image4) values (:description, :price, :quantity, :category, :date, :user_url, :image, :image2, :image3, :image4)";
+            $query = "INSERT INTO products (description, price, quantity, category, date, user_url, image, image2, image3, image4, slag) values (:description, :price, :quantity, :category, :date, :user_url, :image, :image2, :image3, :image4, :slag)";
             $check = $DB->write($query, $arr);
 
             // check if query ran
@@ -90,11 +102,11 @@ Class Product extends Models {
     public function edit($DATA, $FILES) {
         $DB = Database::newInstance();
 
-
         $arr['id'] = (int) $DATA->id;
         $arr['description'] = ucwords($DATA->description);
         $arr['quantity'] = ucwords($DATA->quantity);
         $arr['price'] = ucwords($DATA->price);
+        $arr['category'] = $DATA->category;
 
         $error = false;
         // check if theirs an error in input
@@ -148,18 +160,13 @@ Class Product extends Models {
                 
             } 
         }
-        
 
-        show($DATA);
-        show($FILES);
-        show($arr);
-        die;
-        $query = "UPDATE products SET description = :description WHERE id = :id limit 1";
+        $query = "UPDATE products SET description = :description, quantity = :quantity, category = :category, price = :price, image = :image, image2 = :image2, image3 = :image3, image4 = :image4 WHERE id = :id limit 1";
         $check = $DB->write($query, $arr);
 
         if(!$check) return false;
 
-        $this->success_message = "Your row was successfully edited";
+        $this->success_message = "Product successfully edited";
         return true;
     }
 
@@ -176,6 +183,31 @@ Class Product extends Models {
         $this->success_message = "Category $description deleted successfully";
         return true;
         
+    }
+    
+
+    public function featured_items() {
+        $db = Database::newInstance();
+        $query = "SELECT * FROM products";
+        $rows = $db->read($query);
+
+        if(!$rows) return false;
+
+        return $rows;
+        
+    }
+
+
+    public function single_product($slag) {
+        $db = Database::newInstance();
+        $query = "SELECT * FROM products WHERE slag = :slag limit 1";
+        $row = $db->read($query, ['slag' => $slag]);
+
+        if(!$row) return false;
+       // show($row); die;
+       if(is_array($row)) {
+           return $row[0];
+       }
     }
 
 
@@ -210,6 +242,16 @@ Class Product extends Models {
             }
         }
         return $result; 
+    }
+
+
+    public function str_to_url($url) {
+        $url = preg_replace('~[^\\pL0-9_]+~u', '-', $url);
+        $url = trim($url, "-");
+        $url = iconv("utf-8", "us-ascii//TRANSLIT", $url);
+        $url = strtolower($url);
+        $url = preg_replace('~[^-a-z0-9_]+~', '', $url);
+        return $url;
     }
 }
 

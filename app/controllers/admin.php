@@ -38,10 +38,11 @@ class Admin extends Controller {
 
         // Load categories 
         $category = $this->load_model('Category');
-        $cats = $category->get_all_data('categories');
+        $cats_all = $category->get_all_data('categories');
+        $cats_some = $category->get_active_cat();
 
         // load category table
-        if(is_array($cats)) $table_row = $category->make_table($cats);
+        if(is_array($cats_all)) $table_row = $category->make_table($cats_all);
         
 
         if(!$row) $this->redirect('login');         // Redirect to login   
@@ -51,6 +52,7 @@ class Admin extends Controller {
             'page_tittle' => 'Admin',
             'user_data' => $row,
             'table_row' => $table_row,
+            'categories' => $category->make_parent($cats_some),
         ];
     
         $this->view("admin/categories", $data);         

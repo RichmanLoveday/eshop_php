@@ -48,10 +48,10 @@ class Ajax_category extends Controller {
             if($fetch->data_type === 'edit_category') {
                 // add new category
                 // load model
-                // show($fetch);
+                //show($fetch); die;
                 
                 $category = $this->load_model('Category');
-                $cats = $category->edit($fetch->id, $fetch->data);
+                $cats = $category->edit($fetch);
 
                 if(!$cats) {
                     $data['message'] = $category->errors;
@@ -103,12 +103,14 @@ class Ajax_category extends Controller {
 
                 if($delete) {
                     $cats = $category->get_all_data('categories');        // Get all data
+                    $cats_some = $category->get_active_cat();
                     $data = [];
                     
                     // Data to be sent to javascript
                     $data['message'] = $category->success_message;
                     $data['message_type'] = 'info';
                     $data['data'] = $category->make_table($cats);
+                    $data['parent'] = $category->make_parent($cats_some);
                     $data['data_type'] = "delete_row";
 
                     echo json_encode($data);
@@ -129,11 +131,13 @@ class Ajax_category extends Controller {
                 // Data to be sent to javascript
                 if($update) {
                     $cats = $category->get_all_data('categories');        // Get all data
+                    $cats_some = $category->get_active_cat();
 
                     $data = [];
                     $data['message'] = $category->success_message;
                     $data['message_type'] = 'info';
                     $data['data'] = $category->make_table($cats);
+                    $data['parent'] = $category->make_parent($cats_some);
                     $data['data_type'] = "disable_row";
                     $data['current_state'] = $fetch->current_state;
                 }
@@ -154,6 +158,7 @@ class Ajax_category extends Controller {
 
                     $data['current_state'] = $cats->disabled;
                     $data['input'] = $cats->category;
+                    $data['parent'] = $cats->parent;
                     $data['id'] = $cats->id;
                     $data['data_type'] = 'data_row';
                     

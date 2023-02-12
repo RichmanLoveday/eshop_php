@@ -17,14 +17,22 @@ class Home extends Controller {
 
         if(!$row) return $this->view("index", $data);         // Redirect to index page   
 
+        // Get featured items
+        $product = $this->load_model('product');
+        $featured_items = $product->featured_items();
+        // show($featured_items);
+        // die;
+        
         // Data to send to view
         $data = [
             'page_tittle' => 'Home',
             'user_data' => $row,
+            'featured_items' => $featured_items,
         ];
     
         $this->view("index", $data);         
     }
+    
 }
 
 

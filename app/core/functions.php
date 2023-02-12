@@ -36,4 +36,9 @@ function get_var(string $key, $default = NULL) {
 }
 
 
+function esc($data) {
+    return addslashes($data);
+}
+
+
 ?>

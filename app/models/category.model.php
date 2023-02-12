@@ -9,7 +9,8 @@ Class Category extends Models {
 
         $DB = Database::getInstance();
 
-        $arr['category'] = ucwords($DATA->data);
+        $arr['category'] =  ucwords($DATA->category);
+        $arr['parent'] =    ucwords($DATA->parent);
 
         // check if theirs an error in input
         if(!preg_match("/^[a-zA-Z ]+$/", trim($arr['category']))) {
@@ -17,7 +18,8 @@ Class Category extends Models {
             return false;
         } 
 
-        $query = "INSERT INTO categories (category) values (:category)";
+        // show($arr); die;
+        $query = "INSERT INTO categories (category, parent) values (:category, :parent)";
         $check = $DB->write($query, $arr);
 
         // check if query ran
@@ -29,12 +31,13 @@ Class Category extends Models {
         return true;
     }
 
-    public function edit($id, $category) {
+    public function edit($data) {
+        //show($data); die;
         $DB = Database::newInstance();
-        $id = (int) $id;
+        $id = (int) $data->id;
 
-        $arr = ['id' => $id, 'category' => $category];
-        $query = "UPDATE categories SET category = :category WHERE id = :id limit 1";
+        $arr = ['id' => $id, 'category' => $data->category_edit, 'parent' => $data->parent_edit];
+        $query = "UPDATE categories SET category = :category, parent = :parent WHERE id = :id limit 1";
         $check = $DB->write($query, $arr);
 
         if(!$check) return false;
@@ -99,10 +102,20 @@ Class Category extends Models {
                 // Loop throgh to get rows"
                 $state = $cat_row->disabled  ? "Disabled" : "Enabled";
                 $id = $cat_row->id;
+                
+                // Get parent category
+                $parent = '';
+                foreach($cats as $cat_row2)  {
+                    if($cat_row->parent == $cat_row2->id) {
+                        $parent = $cat_row2->category;
+                    }
+                }
+
                 $current_state = $cat_row->disabled ? 'label-warning' : 'label-info';
                 $result .=
                 '<tr>
                     <td><a href="basic_table.html#">'.$cat_row->category.'</a></td>
+                    <td><a href="basic_table.html#">'.$parent.'</a></td>
                     <td><span data-rowId="'.$cat_row->id.'" data-rowUrl="'.$url.'" data-rowState="'.$state.'" class="label '.$current_state.' label-mini disable_row" style="cursor: pointer;">'. str_replace("'", '', $state) . '</span></td>
                     <td>
                         <button data-rowId="'.$id.'" data-rowUrl="'.$url.'" class="btn btn-primary btn-xs row_edit" style="outline: none;"><i class="fa fa-pencil" style="pointer-events:none;"></i></button>
@@ -114,7 +127,21 @@ Class Category extends Models {
         return $result; 
     }
 
+
+    public function make_parent($cats) {
+        $result = '<option value="">-----select sub-category------</option>';
+        if(is_array($cats)) {
+            foreach($cats as $cat_row) {
+                $result .= ' 
+                    <option value="'.$cat_row->id.'" required>'.$cat_row->category.'</option>
+                ';
+            }
+        }
+        return $result;
+    }
+
 }
+
 
 
 ?>
