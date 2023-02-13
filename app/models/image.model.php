@@ -17,7 +17,7 @@ class Image {
 		return $text;
 	}
 
-	public function crop_image($original_file_name,$cropped_file_name,$max_width,$max_height) {
+	private function crop_image($original_file_name,$cropped_file_name,$max_width,$max_height) {
 
 		if(file_exists($original_file_name)) {
  

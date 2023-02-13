@@ -5,7 +5,7 @@ use app\models\Auth;
 
 Class Product extends Models {
     
-    public function create($DATA, $FILES) {
+    public function create($DATA, $FILES, $image_class = null) {
         //show($DATA); die;
         $DB = Database::getInstance();
         
@@ -74,9 +74,11 @@ Class Product extends Models {
                     return false;
                 }
 
-                $destination = $dir . $img_row['name'];
+                $destination = $dir . $image_class->generate_filename(60) . ".jpg";
                 move_uploaded_file($img_row['tmp_name'], $destination);
                 $arr[$key] = $destination;
+
+                $image_class->resize_image($destination, $destination, 1500, 1500);
                 
             } 
         }
@@ -99,7 +101,7 @@ Class Product extends Models {
     }
 
     // Edit a category
-    public function edit($DATA, $FILES) {
+    public function edit($DATA, $FILES, $image_class = null) {
         $DB = Database::newInstance();
 
         $arr['id'] = (int) $DATA->id;
@@ -154,9 +156,10 @@ Class Product extends Models {
                     return false;
                 }
 
-                $destination = $dir . $img_row['name'];
+                $destination = $dir . $image_class->generate_filename(60) . ".jpg";
                 move_uploaded_file($img_row['tmp_name'], $destination);
                 $arr[$key] = $destination;
+                $image_class->resize_image($destination, $destination, 1500, 1500);
                 
             } 
         }

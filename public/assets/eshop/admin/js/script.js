@@ -81,10 +81,10 @@ const close_modal = function (modal, overlay, input = null,) {
     }
 
     // Check form for file input modals
-    if (modal.classList.contains('edit_product_modal') || modal.classList.contains('product_modal')) {
+    if (modal.classList.contains('product_modal')) {
         modal.classList.remove('show');
         overlay.classList.remove('show');
-        console.log(Object.values(input));
+        console.log(input);
         if (input !== null) {
             Object.values(input).forEach((input, index) => {
                 if (index !== 8) {
@@ -92,6 +92,7 @@ const close_modal = function (modal, overlay, input = null,) {
                     input.value = '';
                     input.classList.remove('errInput');
                 } else {
+                    console.log(input);
                     input.forEach(ele => {
                         // Hide preview images
                         ele.classList.add('hide');
@@ -99,7 +100,29 @@ const close_modal = function (modal, overlay, input = null,) {
                 }
             });
         }
+        return;
+    }
 
+    if (modal.classList.contains('edit_product_modal')) {
+        modal.classList.remove('show');
+        overlay.classList.remove('show');
+
+        if (input !== null) {
+            console.log(input);
+            // Object.values(input).forEach((input, index) => {
+            //     if (index !== 8) {
+            //         // clear value
+            //         input.value = '';
+            //         input.classList.remove('errInput');
+            //     } else {
+            //         console.log(input);
+            //         index.forEach(ele => {
+            //             // Hide preview images
+            //             ele.classList.add('hide');
+            //         })
+            //     }
+            // });
+        }
         return;
     }
 

@@ -23,12 +23,13 @@ class Ajax_product extends Controller {
 
         // Add product controller+
         if(is_object($fetch) && isset($fetch->data_type)) {
+            $product = $this->load_model('product');
+            $image_class = $this->load_model('Image');
             
             if($fetch->data_type === 'add_product') {
                 // add new product
                 // load model
-                $product = $this->load_model('product');
-                $cats = $product->create($fetch, $_FILES);
+                $cats = $product->create($fetch, $_FILES, $image_class);
 
                 if(!$cats) {
                     $data['message'] = $product->errors;
@@ -57,12 +58,10 @@ class Ajax_product extends Controller {
             // Edit product
             if($fetch->data_type === 'get_product_data') {
                 $id = $fetch->id;
-
-                $product = $this->load_model('Product');
                 $product_data = $product->get_single_data('products', $id);
 
                 // get cat single data
-                $cats = $product->get_single_data('categories',$product_data->category);
+                $cats = $product->get_single_data('categories', $product_data->category);
                 //show($product_data); die;
                 if($product_data) {
                     $data = [];
@@ -85,8 +84,7 @@ class Ajax_product extends Controller {
                 // load model
                 // show($fetch);
                 // die;
-                $product = $this->load_model('product');
-                $cats = $product->edit($fetch, $_FILES);
+                $cats = $product->edit($fetch, $_FILES, $image_class);
 
                 if(!$cats) {
                     $data['message'] = $product->errors;
