@@ -54,6 +54,23 @@ const show_modal = function (modal, input = null) {
     }
 
     if (modal.classList.contains('edit_product_modal')) {
+
+        console.log(input);
+
+        Object.values(input.productCategory.options).forEach(option => {
+            (option.textContent === input.data.category) ? option.selected = true : '';
+        });
+
+        input.productId.dataset.rowid = input.data.id;
+        input.productName.value = input.data.description;
+
+        input.preview_image.src = input.preview_image.dataset.url + input.data.image;
+        input.preview_image2.src = (input.data.image2 !== 'number') ? input.preview_image2.dataset.url + input.data.image2 : '';
+        input.preview_image3.src = (input.data.image3 !== 'number') ? input.preview_image3.dataset.url + input.data.image3 : '';
+        input.preview_image4.src = (input.data.image4 !== 'number') ? input.preview_image4.dataset.url + input.data.image4 : '';
+        input.productQuantity.value = +input.data.quantity;
+        input.productPrice.value = +input.data.price;
+
         overlay.addEventListener('click', close_modal.bind(this, editProductModal, overlay, editInput));
         btnCloseModal?.addEventListener('click', close_modal.bind(this, editProductModal, overlay, editInput));
     }
@@ -109,19 +126,19 @@ const close_modal = function (modal, overlay, input = null,) {
 
         if (input !== null) {
             console.log(input);
-            // Object.values(input).forEach((input, index) => {
-            //     if (index !== 8) {
-            //         // clear value
-            //         input.value = '';
-            //         input.classList.remove('errInput');
-            //     } else {
-            //         console.log(input);
-            //         index.forEach(ele => {
-            //             // Hide preview images
-            //             ele.classList.add('hide');
-            //         })
-            //     }
-            // });
+            Object.values(input).forEach((input, index) => {
+                if (index !== 8) {
+                    // clear value
+                    input.value = '';
+                    input.classList.remove('errInput');
+                } else {
+                    console.log(input);
+                    index.forEach(ele => {
+                        // Hide preview images
+                        ele.classList.add('hide');
+                    })
+                }
+            });
         }
         return;
     }

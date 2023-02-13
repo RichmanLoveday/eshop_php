@@ -6,6 +6,8 @@ use app\models\User;
 class Home extends Controller {
 
     public function index() {
+        $product = $this->load_model('product');
+        $image_class = $this->load_model('Image');
         $data = [];
         
         $USER = Auth::logged_in();
@@ -18,8 +20,15 @@ class Home extends Controller {
         if(!$row) return $this->view("index", $data);         // Redirect to index page   
 
         // Get featured items
-        $product = $this->load_model('product');
         $featured_items = $product->featured_items();
+
+        // resize image
+        if($featured_items) {
+            foreach($featured_items as $key => $item) {
+                $featured_items[$key]->image = $image_class->get_thumb_post($featured_items[$key]);
+            }
+        }
+        
         // show($featured_items);
         // die;
         
