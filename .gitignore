@@ -1,6 +1,10 @@
 app/views
 
-public/assets
+public/assets/admin
+public/assets/css
+public/assets/fonts
+public/assets/images
+public/assets/js
 
 public/assets/eshop/gitadmin/
 

@@ -8,24 +8,23 @@ class Product_details extends Controller {
     public function index($slag) {
         $data = [];
         $slag = esc($slag);
+
+        $product = $this->load_model('Product'); 
+        $user = $this->load_model('User');                // Load user model
+        $image_class = $this->load_model('Image');
+        
         $USER = Auth::logged_in();
         //show($USER); die;
-        if(!$USER) return $this->view("index", $data);         // Redirect to index page  
-
-        $user = $this->load_model('User');                // Load user model
-        $row = $user->get_user_row($USER);
-
-        if(!$row) return $this->view("index", $data);         // Redirect to index page   
-
-        // Get single product
-        $product = $this->load_model('Product');                // Load product model
+         
+        $row = ($USER) ? $user->get_user_row($USER) : '';
+        
         $single_product = $product->single_product($slag);
         // show($featured_items);
         // die;
         
         // Data to send to view
         $data = [
-            'page_tittle' => 'Product Details',
+            'page_title' => 'Product Details',
             'user_data' => $row,
             'single_product' => $single_product,
             'images' => [$single_product ? $single_product->image : '', $single_product ? $single_product->image2 : '', $single_product ? $single_product->image3 : '', $single_product ? $single_product->image4 : ''],

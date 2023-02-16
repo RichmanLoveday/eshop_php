@@ -19,7 +19,7 @@ Class Profile extends Controller {
 
         // Data to send to view
         $data = [
-            'page_tittle' => 'Profile',
+            'page_title' => 'Profile',
             'user_data' => $row,
         ];
     

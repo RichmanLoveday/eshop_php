@@ -48,7 +48,7 @@ class Products extends Controller {
 
         // Data to send to view
         $data = [
-            'page_tittle' => 'Admin',
+            'page_title' => 'Admin',
             'user_data' => $row,
             'table_row' => $table_row,
         ];

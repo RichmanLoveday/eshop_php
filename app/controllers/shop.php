@@ -3,14 +3,13 @@ use app\core\Controller;
 use app\models\Auth;
 use app\models\User;
 
-class Home extends Controller {
+class Shop extends Controller {
 
     public function index() {
+        $data = [];
         $product = $this->load_model('product');
         $image_class = $this->load_model('Image');
         $user = $this->load_model('User');                // Load user model
-
-        $data = [];
         
         $USER = Auth::logged_in();
         //show($USER); die;
@@ -32,15 +31,14 @@ class Home extends Controller {
         
         // Data to send to view
         $data = [
-            'page_title' => 'Home',
+            'page_title' => 'Shop',
             'user_data' => $row,
             'featured_items' => $featured_items,
         ];
     
-        $this->view("index", $data);         
+        $this->view("shop", $data);         
     }
     
 }
-
 
 ?>
