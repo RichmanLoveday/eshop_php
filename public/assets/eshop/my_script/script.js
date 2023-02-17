@@ -163,7 +163,8 @@ const send_data = async function (url, data = {}, handle_result) {
         "Content-Type": "multipart/form-data"
     });
 
-    console.log(res);
+    console.log(data);
+    console.log(res.data);
 
     handle_result(res.data);
 };
@@ -188,7 +189,7 @@ const get_data = async function (url, data = {}) {
         "Content-Type": "multipart/form-data"
     });
     return res.data;
-    // handle_result(res.data);
+    //handle_result(res.data);
 };
 
 
