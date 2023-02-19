@@ -25,16 +25,7 @@ handle_result = function (result) {
             }
         }
 
-        if (obj.data_type === 'increase_quantity') {
-            if (typeof obj.message_type !== 'undefined') {
-                console.log(obj);
-                // update cart datas
-                cartDatas.innerHTML = obj.products;
-                console.log(cartDatas);
-            }
-        }
-
-        if (obj.data_type === 'decrease_quantity') {
+        if (obj.data_type === 'increase_quantity' || obj.data_type === 'decrease_quantity' || obj.data_type === 'remove_cart' || obj.data_type === 'edit_quantity') {
             if (typeof obj.message_type !== 'undefined') {
                 console.log(obj);
                 // update cart datas
@@ -55,8 +46,8 @@ const add_to_cart = function (e) {
     console.log(e.target);
     const id = e.target.dataset.id;
     const url = e.target.dataset.url;
-    console.log(id);
-    console.log(url);
+    // console.log(id);
+    // console.log(url);
 
     // ajax data to php
     send_data(url, { id: id, data_type: 'add_to_cart' }, handle_result)
@@ -69,8 +60,11 @@ featuresItem?.addEventListener('click', add_to_cart);
 
 const increase_quantity = function (e) {
     e.preventDefault();
+    if (!(e.target.classList.contains('cart_quantity_up') || e.target.classList.contains('cart_quantity_down') || e.target.classList.contains('cart_quantity_delete') || e.target.classList.contains('cart_quantity_input'))) return;
+
     console.log(e);
     let url, id, data_type;
+    let data = null;
     // check for class content
     if (e.target.classList.contains('cart_quantity_up')) {
         console.log(e.target);
@@ -79,6 +73,8 @@ const increase_quantity = function (e) {
         url = e.target.dataset.url;
         data_type = 'increase_quantity';
         console.log(url);
+
+        send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
 
     }
 
@@ -89,19 +85,48 @@ const increase_quantity = function (e) {
         url = e.target.dataset.url;
         data_type = 'decrease_quantity';
         console.log(url);
+
+        // send to ajax
+        send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
     }
 
-    if (e.target.classList.contains('cart_quantity_delete')) {
+    if (e.target.classList.contains('cart_quantity_delete') || e.target.classList.contains('cart_quantity_delete_i')) {
         console.log(e.target);
         // get url, id, input value
         id = e.target.dataset.id;
         url = e.target.dataset.url;
-        data_type = 'decrease_quantity';
-        console.log(url);
+        data_type = 'remove_cart';
+
+        // send to ajax
+        send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
     }
 
-    // send to ajax
-    send_data(url, { id: id, data_type: data_type }, handle_result);
+
+    if (e.target.classList.contains('cart_quantity_input')) {
+        const input = e.target;
+        console.log(input);
+        input.addEventListener('change', function (e) {
+            console.log(e);
+            // get quantity value
+            const quantity = e.target.value;
+            // check input
+            if (isNaN(quantity)) return;
+
+            // check for spaces 
+            // [...quantity].forEach(str => console.log(str));
+
+            // send data
+            id = input.dataset.id;
+            url = input.dataset.url;
+            data = quantity.trim();
+            data_type = 'edit_quantity';
+            console.log(data);
+            console.log(data);
+
+            // send to ajax
+            send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
+        });
+    }
 
 }
 cartDatas?.addEventListener('click', increase_quantity);

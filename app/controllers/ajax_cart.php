@@ -9,7 +9,7 @@ class Ajax_cart extends Controller {
         $fetch = file_get_contents("php://input");
         $fetch = json_decode($fetch);
         $data = [];
-       //show($fetch); die;
+       // show($fetch); die;
 
         // load models
         $cart = $this->load_model('CartModel');
@@ -93,8 +93,30 @@ class Ajax_cart extends Controller {
             }
 
             if($fetch->data_type === 'remove_cart') {
-                // show($fetch);
-                // die;
+                $id = esc($fetch->id);
+                $rvm_cart = $cart->remove_cart('CART', $id, $image_class);
+                if($rvm_cart) {
+                    // show($dcr_qty);
+                    $data['products'] = $rvm_cart;
+                    $data['message_type'] = 'info';
+                    $data['data_type'] = "remove_cart";
+                    echo json_encode($data);
+                }
+            }
+
+            if($fetch->data_type === 'edit_quantity') {
+               // show($fetch); die;
+                $id = esc($fetch->id);
+                $qty = esc($fetch->data);
+                $edit_qty = $cart->edit_quantity('CART', $id, $qty,$image_class);
+
+                if($edit_qty) {
+                    $data['products'] = $edit_qty;
+                    $data['message_type'] = 'info';
+                    $data['data_type'] = "edit_quantity";
+                    echo json_encode($data);
+                }
+
             }
 
 

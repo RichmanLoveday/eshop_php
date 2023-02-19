@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 use app\core\Database;
 use app\core\Models;
 
@@ -65,7 +65,7 @@ Class CartModel extends Models {
                         <div class="cart_quantity_button">
                             <a data-url="'.ROOT. 'ajax_cart" data-id="'. $item->id .'" class="cart_quantity_down"
                         href=""> - </a>
-                        <input class="cart_quantity_input" value="'.$item->cart_qty.'" type="text" name="quantity" value="1" autocomplete="off"
+                        <input  data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'" class="cart_quantity_input" value="'.$item->cart_qty.'" type="text" name="quantity" value="1" autocomplete="off"
                             size="2">
                         <a data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'" class="cart_quantity_up" href=""> + </a>
 
@@ -75,7 +75,7 @@ Class CartModel extends Models {
                             <p class="cart_total_price">$'.$item->price * $item->cart_qty.'</p>
                         </td>
                         <td class="cart_delete">
-                            <a data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'" class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
+                            <a data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'" class="cart_quantity_delete" href=""><i class="fa fa-times cart_quantity_delete_i" data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'"></i></a>
                         </td>
                     </td>
                 </tr>
@@ -84,7 +84,7 @@ Class CartModel extends Models {
             }
         } else {
             $result .= '
-                <div>Cart is empty</div>
+                <div class="empty">No item was found in cart</div>
             ';
         }
         return $result;
@@ -109,21 +109,7 @@ Class CartModel extends Models {
             $products = $this->get_products($prod_ids);
 
             // create cart quantity and reduce image
-            if(is_array($products)) {
-                foreach($products as $key => $row) {
-                    // resize image
-                    $products[$key]->image = $image_class->get_thumb_post($products[$key]->image);
-                    
-                    // loop through session carts
-                    foreach($_SESSION[$cart_index] as $item) {
-                       if($row->id == $item->id) {
-                        $products[$key]->cart_qty = $item->qty;
-                        break;
-                       }
-                    }
-                
-                }
-            }
+            $this->setCartQty($products, 'CART', $image_class);
 
             return $this->make_table($products);        // updated table
         }
@@ -148,21 +134,7 @@ Class CartModel extends Models {
             $products = $this->get_products($prod_ids);
 
             // create cart quantity and reduce image
-            if(is_array($products)) {
-                foreach($products as $key => $row) {
-                    // resize image
-                    $products[$key]->image = $image_class->get_thumb_post($products[$key]->image);
-                    
-                    // loop through session carts
-                    foreach($_SESSION[$cart_index] as $item) {
-                       if($row->id == $item->id) {
-                        $products[$key]->cart_qty = $item->qty;
-                        break;
-                       }
-                    }
-                
-                }
-            }
+            $this->setCartQty($products, 'CART', $image_class);
 
             return $this->make_table($products);        // updated table
         }
@@ -171,7 +143,6 @@ Class CartModel extends Models {
 
     public function remove_cart(string $cart_index, string $id, $image_class) {
         if(isset($_SESSION[$cart_index])) {
-            show($_SESSION[$cart_index]);
             foreach($_SESSION[$cart_index] as $key => $item) {
                 if($item->id === $id) {
                     unset($_SESSION[$cart_index][$key]);
@@ -181,31 +152,63 @@ Class CartModel extends Models {
             }
 
             // return to updated table
-            show($_SESSION[$cart_index]);
             $ids_str = array_column($_SESSION[$cart_index], 'id');
             $prod_ids = "'". implode("','", $ids_str) . "'";
             $products = $this->get_products($prod_ids);
 
             // create cart quantity and reduce image
-            if(is_array($products)) {
-                foreach($products as $key => $row) {
-                    // resize image
-                    $products[$key]->image = $image_class->get_thumb_post($products[$key]->image);
-                    
-                    // loop through session carts
-                    foreach($_SESSION[$cart_index] as $item) {
-                       if($row->id == $item->id) {
-                        $products[$key]->cart_qty = $item->qty;
-                        break;
-                       }
-                    }
-                
-                }
-            }
+            $this->setCartQty($products, 'CART', $image_class);
+            
 
             return $this->make_table($products);        // updated table
         }
         return false;
+    }
+
+
+    public function edit_quantity($cart_index, $id, $quantity, $image_class) {
+        if(isset($_SESSION[$cart_index])) {
+            //show($_SESSION[$cart_index]);
+            foreach($_SESSION[$cart_index] as $key => $item) {
+                if($item->id === $id) {
+                    $item->qty = (int) $quantity;
+                    break;
+                }
+            }
+            //show($_SESSION[$cart_index]);
+
+            // return to updated table
+           // show($_SESSION[$cart_index]);
+            $ids_str = array_column($_SESSION[$cart_index], 'id');
+            $prod_ids = "'". implode("','", $ids_str) . "'";
+            $products = $this->get_products($prod_ids);
+
+            // create cart quantity and reduce image
+            $this->setCartQty($products, 'CART', $image_class);
+
+            return $this->make_table($products);        // updated table
+        }
+
+        return false;
+    }
+    
+
+    private function setCartQty($products, string $cart_index, $image_class) {
+        if(is_array($products)) {
+            foreach($products as $key => $row) {
+                // resize image
+                $products[$key]->image = $image_class->get_thumb_post($products[$key]->image);
+                
+                // loop through session carts
+                foreach($_SESSION[$cart_index] as $item) {
+                   if($row->id == $item->id) {
+                    $products[$key]->cart_qty = $item->qty;
+                    break;
+                   }
+                }
+            
+            }
+        }
     }
 }
 

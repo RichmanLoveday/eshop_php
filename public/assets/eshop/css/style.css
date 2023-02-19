@@ -115,6 +115,13 @@
     border-radius: 2px;
 }
 
+.empty {
+    font-size: 16px;
+    text-align: center;
+    padding: 18px;
+    font-weight: 700;
+}
+
 /* .table_body {
     display: flex;
     justify-content: center;
