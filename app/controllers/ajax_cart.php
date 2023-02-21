@@ -71,7 +71,7 @@ class Ajax_cart extends Controller {
                 if($inc_qty) {
                     // update table row
                     // show($inc_qty);
-                    $data['products'] = $inc_qty;
+                    $data['products_details'] = $inc_qty;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "increase_quantity";
                     echo json_encode($data);
@@ -85,10 +85,10 @@ class Ajax_cart extends Controller {
                 $dcr_qty = $cart->decrease_quantity('CART', $id, $image_class);
                 if($dcr_qty) {
                     // show($dcr_qty);
-                    $data['products'] = $dcr_qty;
+                    $data['products_details'] = $dcr_qty;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "decrease_quantity";
-                    echo json_encode($data);
+                    echo json_encode($data); die;
                 }
             }
 
@@ -97,10 +97,10 @@ class Ajax_cart extends Controller {
                 $rvm_cart = $cart->remove_cart('CART', $id, $image_class);
                 if($rvm_cart) {
                     // show($dcr_qty);
-                    $data['products'] = $rvm_cart;
+                    $data['products_details'] = $rvm_cart;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "remove_cart";
-                    echo json_encode($data);
+                    echo json_encode($data); die;
                 }
             }
 
@@ -111,10 +111,10 @@ class Ajax_cart extends Controller {
                 $edit_qty = $cart->edit_quantity('CART', $id, $qty,$image_class);
 
                 if($edit_qty) {
-                    $data['products'] = $edit_qty;
+                    $data['products_details'] = $edit_qty;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "edit_quantity";
-                    echo json_encode($data);
+                    echo json_encode($data); die;
                 }
 
             }

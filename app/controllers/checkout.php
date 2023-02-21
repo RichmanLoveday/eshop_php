@@ -3,15 +3,18 @@ use app\core\Controller;
 use app\models\Auth;
 use app\models\User;
 
-class Cart extends Controller {
+class Checkout extends Controller {
 
     public function index() {
         $data = [];
         $product = $this->load_model('product');
+        $countries = $this->load_model('Countries');
         $cart = $this->load_model('CartModel');
         $image_class = $this->load_model('Image');
         $user = $this->load_model('User');                // Load user model
         
+
+        // check user login and fetch user session datas
         $USER = Auth::logged_in();
         //show($USER); die;
          
@@ -43,14 +46,19 @@ class Cart extends Controller {
                     break;
                    }
                 }
-                
+
                 // Add up sub total
                 $sub_total += $row->price * $row->cart_qty;
             }
             
         }
 
-        // sort the products in asc order
+
+        // get countries 
+        $countryData = $countries->get_countries();
+        $countryList = ($countries) ? $countries->make_countries($countryData) : '';     
+
+        // sort the products and countries in asc order 
         if(is_array($products)) rsort($products);
         
         // Data to send to view
@@ -59,9 +67,10 @@ class Cart extends Controller {
             'user_data' => $row1,
             'sub_total' => number_format($sub_total, 2),
             'products' => $cart->make_table($products),
+            'countries' => $countryList,
         ];
     
-        $this->view("cart", $data);         
+        $this->view("checkout", $data);         
     }
     
 }

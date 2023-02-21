@@ -47,6 +47,7 @@ Class CartModel extends Models {
 
         $result = '';
         if(is_array($products)) {
+            rsort($products);
             foreach($products as $item) {
                 $result .= '
                 <tr>
@@ -65,10 +66,9 @@ Class CartModel extends Models {
                         <div class="cart_quantity_button">
                             <a data-url="'.ROOT. 'ajax_cart" data-id="'. $item->id .'" class="cart_quantity_down"
                         href=""> - </a>
-                        <input  data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'" class="cart_quantity_input" value="'.$item->cart_qty.'" type="text" name="quantity" value="1" autocomplete="off"
+                        <input style=outline:none;  data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'" class="cart_quantity_input" value="'.$item->cart_qty.'" type="text" name="quantity" value="1" autocomplete="off"
                             size="2">
                         <a data-url="'.ROOT. 'ajax_cart" data-id="'.$item->id.'" class="cart_quantity_up" href=""> + </a>
-
                         </div>
                         </td>
                         <td class="cart_total">
@@ -79,12 +79,11 @@ Class CartModel extends Models {
                         </td>
                     </td>
                 </tr>
-                
                 ';
             }
         } else {
             $result .= '
-                <div class="empty">No item was found in cart</div>
+                <div class="empty">No item were found in cart</div>
             ';
         }
         return $result;
@@ -109,9 +108,13 @@ Class CartModel extends Models {
             $products = $this->get_products($prod_ids);
 
             // create cart quantity and reduce image
-            $this->setCartQty($products, 'CART', $image_class);
+            $sub_total = $this->setCartQty($products, 'CART', $image_class);
 
-            return $this->make_table($products);        // updated table
+            return [
+                // updated table
+                'products' => $this->make_table($products), 
+                'sub_total' => number_format($sub_total, 2),
+            ]; 
         }
         return false;
     }
@@ -134,9 +137,13 @@ Class CartModel extends Models {
             $products = $this->get_products($prod_ids);
 
             // create cart quantity and reduce image
-            $this->setCartQty($products, 'CART', $image_class);
+            $sub_total = $this->setCartQty($products, 'CART', $image_class);
 
-            return $this->make_table($products);        // updated table
+            return [
+                // updated table
+                'products' => $this->make_table($products), 
+                'sub_total' => number_format($sub_total, 2),
+            ]; 
         }
         return false;
     }
@@ -157,10 +164,14 @@ Class CartModel extends Models {
             $products = $this->get_products($prod_ids);
 
             // create cart quantity and reduce image
-            $this->setCartQty($products, 'CART', $image_class);
+            $sub_total = $this->setCartQty($products, 'CART', $image_class);
             
 
-            return $this->make_table($products);        // updated table
+            return [
+                // updated table
+                'products' => $this->make_table($products), 
+                'sub_total' => number_format($sub_total, 2),
+            ];  
         }
         return false;
     }
@@ -183,10 +194,14 @@ Class CartModel extends Models {
             $prod_ids = "'". implode("','", $ids_str) . "'";
             $products = $this->get_products($prod_ids);
 
-            // create cart quantity and reduce image
-            $this->setCartQty($products, 'CART', $image_class);
+            // create cart quantity and reduce image, return sub_total
+            $sub_total = $this->setCartQty($products, 'CART', $image_class);
 
-            return $this->make_table($products);        // updated table
+            return [
+                // updated table
+                'products' => $this->make_table($products), 
+                'sub_total' => number_format($sub_total, 2),
+            ];       
         }
 
         return false;
@@ -194,6 +209,7 @@ Class CartModel extends Models {
     
 
     private function setCartQty($products, string $cart_index, $image_class) {
+        $sub_total = 0;
         if(is_array($products)) {
             foreach($products as $key => $row) {
                 // resize image
@@ -206,9 +222,13 @@ Class CartModel extends Models {
                     break;
                    }
                 }
-            
+                
+                // Add up sub total
+                $sub_total += $row->price * $row->cart_qty;
             }
         }
+
+        return $sub_total;
     }
 }
 

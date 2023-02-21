@@ -11,7 +11,6 @@ class Controller {
         if(file_exists("../app/views/". THEME . $path . ".php")) {
             include "../app/views/". THEME . $path . ".php";
         } else {
-            //die;
             include "../app/views/" . THEME . "404.php";
         }
     }

@@ -3,6 +3,8 @@ const cartQuantityUp = document.querySelector('.cart_quantity_up');
 const cartQuantityDown = document.querySelector('.cart_quantity_down');
 const cartDatas = document.querySelector('.cart_datas');
 const cartQuantityInput = document.querySelector('.cart_quantity_input');
+const subTotal = document.querySelectorAll('.sub_total');
+const total = document.querySelector('.total_price');
 
 handle_result = function (result) {
     console.log(typeof result)
@@ -29,8 +31,13 @@ handle_result = function (result) {
             if (typeof obj.message_type !== 'undefined') {
                 console.log(obj);
                 // update cart datas
-                cartDatas.innerHTML = obj.products;
-                console.log(cartDatas);
+                cartDatas.innerHTML = obj.products_details.products;
+                subTotal.forEach((ele, index) => {
+                    ele.textContent = (index == 0) ? `Sub Total: $${obj.products_details.sub_total}` : `$${obj.products_details.sub_total}`;
+
+                })
+                console.log(total);
+                total.textContent = `$${obj.products_details.sub_total}`;
             }
         }
     }
