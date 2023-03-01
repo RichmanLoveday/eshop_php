@@ -142,3 +142,8 @@ textarea,
 option {
     outline: none;
 }
+
+.swal {
+    width: 400px !important;
+    font-size: 15px !important;
+}

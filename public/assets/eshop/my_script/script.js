@@ -16,6 +16,22 @@ let handle_result;
 
 // console.log(btnAddCategory);
 // Open modal and overlay
+const spinner = function () {
+    Swal.fire({
+        title: 'Please Wait',
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showSpinner: true,
+        showConfirmButton: false,
+    });
+    Swal.showLoading();
+}
+
+const closeSpinner = function () {
+    swal.close();
+}
+
+
 const show_modal = function (modal, input = null) {
     console.log('Yesssss');
     console.log(modal)
@@ -163,8 +179,8 @@ const send_data = async function (url, data = {}, handle_result) {
         "Content-Type": "multipart/form-data"
     });
 
-    console.log(data);
-    console.log(res.data);
+    // console.log(data);
+    // console.log(res.data);
 
     handle_result(res.data);
 };
@@ -173,14 +189,19 @@ const send_data = async function (url, data = {}, handle_result) {
 const send_data_files = async function (url, data, handle_result) {
     console.log(url);
     console.log(data);
+    // load spinner
+    spinner();
     const res = await axios.post(url, data, {
         "Content-Type": "multipart/form-data"
     });
 
-    console.log(res);
-
-    handle_result(res.data);
+    if (res) {
+        closeSpinner();
+        console.log(res);
+        handle_result(res.data);
+    }
 };
+
 
 // Get result ajax
 const get_data = async function (url, data = {}) {
@@ -298,6 +319,9 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) {
             }
 
             console.log(form, input.productName.value);
+
+            // close modal
+            close_modal(productModal, overlay, input)
 
             // Send files throuh ajax
             send_data_files(url, form, handle_result);

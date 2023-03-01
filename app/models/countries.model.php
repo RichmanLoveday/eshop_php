@@ -15,15 +15,37 @@ Class Countries extends Models {
 
 
     public function get_states($id) {
+        
         $arr['id'] = (int) $id;
-
         $DB = Database::newInstance();
 
-        $query = "SELECT * FROM states WHERE parent = :id ORDER BY parent";
+        $query = "SELECT * FROM state WHERE parent = :id ORDER BY parent";
         $states = $DB->read($query, $arr);
-
+        //show($states); die;
         return $states;
 
+    }
+
+    public function get_state($id) {
+        
+        $arr['id'] = (int) $id;
+        $DB = Database::newInstance();
+
+        $query = "SELECT state FROM state WHERE id = :id ORDER BY parent";
+        $state = $DB->read($query, $arr);
+       
+        return is_array($state) ? $state[0] : false;
+
+    }
+
+    public function get_country($id) {
+        $arr['id'] = (int) $id;
+        $DB = Database::newInstance();
+
+        $query = "SELECT country FROM countries WHERE id = :id";
+        $country = $DB->read($query, $arr);
+
+        return (is_array($country)) ? $country[0] : false;
     }
 
 
@@ -35,7 +57,7 @@ Class Countries extends Models {
             foreach($countries as $country) {
                 $result .= 
                     '
-                        <option data-url="'.ROOT.'ajax_checkout/" value="'.$country->id.'"class="country">'.$country->country.'</option>
+                        <option value="'.$country->id.'"class="country">'.$country->country.'</option>
                     ';
             }
             return $result;
@@ -59,7 +81,6 @@ Class Countries extends Models {
         }
         return false;
     }
-    
 }
 
 ?>

@@ -174,7 +174,7 @@ Class Product extends Models {
     }
 
 
-    public function delete($id, $description) {
+    public function delete($id) {
         
         $DB = Database::newInstance();
         $id = (int) $id;
@@ -183,7 +183,7 @@ Class Product extends Models {
 
         if(!$check) return false;
 
-        $this->success_message = "Category $description deleted successfully";
+        $this->success_message = "Product deleted successfully";
         return true;
         
     }

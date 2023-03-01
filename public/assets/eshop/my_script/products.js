@@ -122,21 +122,17 @@ handle_result = function (result) {
             }
         }
 
-        if (obj.data_type === 'delete_row') {
+        if (obj.data_type === 'delete_product') {
             if (typeof obj.message_type !== 'undefined') {
                 if (obj.message_type === 'info') {
-                    modal_message.textContent = obj.message;
-                    console.log(modal_message);
-                    console.log(modal_message.textContent);
-                    show_modal(success_modal);
-
+                    Swal.fire({
+                        title: 'Deleted!',
+                        customClass: 'swal',
+                        icon: 'success',
+                        text: obj.message,
+                    })
                     // Update table
                     tableBody.innerHTML = obj.data;
-
-                    // Set timeout to close modal
-                    setTimeout(() => {
-                        close_modal(success_modal, overlay);
-                    }, 5000);
 
                 } else {
                     alert(obj.message);
@@ -219,7 +215,7 @@ btnAddNewProduct?.addEventListener('click', collect_data.bind(this, input, 'Plea
 // Edit and delete Row
 
 const edit_product_row = async function (e) {
-    console.log(e);
+    // console.log(e);
     if (!e.target.classList.contains('editProduct')) return;
 
     console.log(e.target.dataset);
@@ -230,6 +226,7 @@ const edit_product_row = async function (e) {
 
     editInput.data = data;      // add data to editInput object
 
+    // show modal of edit productModal
     show_modal(editProductModal, editInput);
 
     // Add event listener to product images 
@@ -240,7 +237,7 @@ const edit_product_row = async function (e) {
         const image = e.target;         // store click image element
         console.log(image.name);
 
-
+        // display image on field elements
         display_image(image, imagesEdit);
 
     });
@@ -249,4 +246,31 @@ const edit_product_row = async function (e) {
     btnEditProduct?.addEventListener('click', collect_edit_data.bind(this, url, editInput, 'edit_product', 'Please input here', handle_result));
 };
 tableBody.addEventListener('click', edit_product_row);
+
+
+const delete_product_row = function (e) {
+    if (!e.target.classList.contains('deleteProduct')) return;
+    console.log(e.target);
+
+    const url = e.target.dataset.rowurl;
+    const id = e.target.dataset.rowid;
+    console.log(url);
+    console.log(Swal);
+    Swal.fire({
+        title: 'Are you sure?',
+        customClass: 'swal',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // data sent to php
+            send_data(url, { id: id, data_type: 'delete_product' }, handle_result);
+        }
+    })
+}
+tableBody.addEventListener('click', delete_product_row);
 

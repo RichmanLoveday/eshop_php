@@ -10,13 +10,14 @@ class Ajax_product extends Controller {
         $fetch = '';
         $fetch =  file_get_contents("php://input");         // Get input files
         $fetch = json_decode($fetch);
+        //show($fetch); 
 
         // check if type != get
-        if(!(is_object($fetch) && ($fetch->type === 'get'))) {
+        if(!(is_object($fetch))) {
             $fetch = (object) $_POST;
         }
        
-        
+       
         // show($_FILES);
         // show($fetch); die;
         $data = [];
@@ -57,6 +58,7 @@ class Ajax_product extends Controller {
 
             // Edit product
             if($fetch->data_type === 'get_product_data') {
+                //show($fetch); die;
                 $id = $fetch->id;
                 $product_data = $product->get_single_data('products', $id);
 
@@ -96,13 +98,42 @@ class Ajax_product extends Controller {
                 
                 if($cats) {
                     $data = [];
-                    $cats = $product->get_all_data('products');
+                    $products = $product->get_all_data('products');
                     
                     // Data to be sent to javascript
-                    $data['data'] = $product->make_table($cats);
+                    $data['data'] = $product->make_table($products);
                     $data['message'] = $product->success_message;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "edit_product";
+            
+                    echo json_encode($data);
+                }
+            }
+
+
+            if($fetch->data_type === 'delete_product') {
+                // add new product
+                // load model
+                
+                $result = $product->delete($fetch->id);
+
+                if(!$result) {
+                    $data['message'] = $product->errors;
+                    $data['message_type'] = 'error';
+                    $data['data'] = '';
+                    $data['data_type'] = "edit_product";
+                    echo json_encode($data);
+                }
+                
+                if($result) {
+                    $data = [];
+                    $products = $product->get_all_data('products');
+                    
+                    // Data to be sent to javascript
+                    $data['data'] = $product->make_table($products);
+                    $data['message'] = $product->success_message;
+                    $data['message_type'] = 'info';
+                    $data['data_type'] = "delete_product";
             
                     echo json_encode($data);
                 }

@@ -7,15 +7,19 @@ const subTotal = document.querySelectorAll('.sub_total');
 const total = document.querySelector('.total_price');
 
 handle_result = function (result) {
-    console.log(typeof result)
-    const obj = result;
+    console.log(typeof result) const obj = result;
+
     if (obj !== '') {
         if (obj.data_type === 'add_to_cart') {
             if (typeof obj.message_type !== 'undefined') {
-                let timerInterval
-                Swal.fire({
+                let timerInterval Swal.fire({
+
                     position: 'top-end',
-                    html: `<div style="font-size: 15px; padding: 10px; color: #FE980F;">${obj.message}</div>`,
+                    html: `<div style="font-size: 15px; padding: 10px; color: #FE980F;">$ {
+                            obj.message
+                        }
+
+                        </div>`,
                     timer: 3000,
                     timerProgressBar: true,
                     showConfirmButton: false,
@@ -23,7 +27,9 @@ handle_result = function (result) {
                     willClose: () => {
                         clearInterval(timerInterval)
                     }
-                },)
+                }
+
+                    , )
             }
         }
 
@@ -32,12 +38,27 @@ handle_result = function (result) {
                 console.log(obj);
                 // update cart datas
                 cartDatas.innerHTML = obj.products_details.products;
-                subTotal.forEach((ele, index) => {
-                    ele.textContent = (index == 0) ? `Sub Total: $${obj.products_details.sub_total}` : `$${obj.products_details.sub_total}`;
 
-                })
-                console.log(total);
-                total.textContent = `$${obj.products_details.sub_total}`;
+                subTotal.forEach((ele, index) => {
+                    ele.textContent = (index == 0) ? `Sub Total: $$ {
+                            obj.products_details.sub_total
+                        }
+
+                        ` : `$$ {
+                            obj.products_details.sub_total
+                        }
+
+                        `;
+
+                }
+
+                ) console.log(total);
+
+                total.textContent = `$$ {
+                    obj.products_details.sub_total
+                }
+
+                `;
             }
         }
     }
@@ -57,9 +78,11 @@ const add_to_cart = function (e) {
     // console.log(url);
 
     // ajax data to php
-    send_data(url, { id: id, data_type: 'add_to_cart' }, handle_result)
+    send_data(url, {
+        id: id, data_type: 'add_to_cart'
+    }
 
-    // handle the result coming back
+        , handle_result) // handle the result coming back
 }
 
 featuresItem?.addEventListener('click', add_to_cart);
@@ -70,8 +93,11 @@ const increase_quantity = function (e) {
     if (!(e.target.classList.contains('cart_quantity_up') || e.target.classList.contains('cart_quantity_down') || e.target.classList.contains('cart_quantity_delete') || e.target.classList.contains('cart_quantity_input'))) return;
 
     console.log(e);
-    let url, id, data_type;
+    let url,
+        id,
+        data_type;
     let data = null;
+
     // check for class content
     if (e.target.classList.contains('cart_quantity_up')) {
         console.log(e.target);
@@ -81,7 +107,11 @@ const increase_quantity = function (e) {
         data_type = 'increase_quantity';
         console.log(url);
 
-        send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
+        send_data(url, {
+            id: id, data: data, data_type: data_type
+        }
+
+            , handle_result);
 
     }
 
@@ -94,7 +124,9 @@ const increase_quantity = function (e) {
         console.log(url);
 
         // send to ajax
-        send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
+        send_data(url, {
+            id: id, data: data, data_type: data_type
+        }, handle_result);
     }
 
     if (e.target.classList.contains('cart_quantity_delete') || e.target.classList.contains('cart_quantity_delete_i')) {
@@ -105,13 +137,18 @@ const increase_quantity = function (e) {
         data_type = 'remove_cart';
 
         // send to ajax
-        send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
+        send_data(url, {
+            id: id, data: data, data_type: data_type
+        }
+
+            , handle_result);
     }
 
 
     if (e.target.classList.contains('cart_quantity_input')) {
         const input = e.target;
         console.log(input);
+
         input.addEventListener('change', function (e) {
             console.log(e);
             // get quantity value
@@ -131,9 +168,16 @@ const increase_quantity = function (e) {
             console.log(data);
 
             // send to ajax
-            send_data(url, { id: id, data: data, data_type: data_type }, handle_result);
-        });
+            send_data(url, {
+                id: id, data: data, data_type: data_type
+            }
+
+                , handle_result);
+        }
+
+        );
     }
 
 }
+
 cartDatas?.addEventListener('click', increase_quantity);
