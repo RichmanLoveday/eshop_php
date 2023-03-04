@@ -456,6 +456,9 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
             }
             console.log(input);
 
+            // close edit modal
+            close_modal(editProductModal, overlay);
+
             // Send files throuh ajax
             send_data_files(url, data, handle_result);
         }

@@ -73,7 +73,7 @@ class Checkout extends Controller {
             $user_id = (Auth::logged_in()) ? Auth::logged_in()->url_address : 0;
             $session_id = session_id();
 
-            $result = $checkout->save_orders($_POST, $products, $user_id, $session_id, $countries);
+            $checkout->save_orders($_POST, $products, $user_id, $session_id, $countries);
             
         }
          

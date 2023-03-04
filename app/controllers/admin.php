@@ -49,7 +49,7 @@ class Admin extends Controller {
 
         // Data to send to view
         $data = [
-            'page_tittle' => 'Admin',
+            'page_tittle' => 'Admin - categories',
             'user_data' => $row,
             'table_row' => $table_row,
             'categories' => $category->make_parent($cats_some),
@@ -87,13 +87,47 @@ class Admin extends Controller {
 
         // Data to send to view
         $data = [
-            'page_tittle' => 'Admin',
+            'page_tittle' => 'Admin - Products',
             'user_data' => $row,
             'categories' => (!$category_data) ? 'No category found' : $category_data,
             'table_row' => !empty($table_row) ? $table_row : 'No record found',
         ];
     
         $this->view("admin/products", $data);         
+    }
+
+
+    public function orders() {
+
+        $order = $this->load_model('Orders');
+        $user = $this->load_model('User');                // Load user model
+        $url = Auth::logged_in();
+        if(!$url || !Auth::access('admin')) $this->redirect('login');         // Redirect user to home
+
+        //  Load user data
+        $user = $user->get_user_row($url);
+        
+
+        // get orders details
+        $orders = $order->get_all_orders();
+        
+        if(is_array($orders)) {
+            // get orders details
+            foreach($orders as $key => $row) {
+                $orders[$key]->details = $order->get_order_details($row->id);
+                $orders[$key]->grand_total = number_format(array_sum(array_column($orders[$key]->details, 'total')));
+            }
+        }
+
+        
+        // data sent to view
+        $data = [
+            'page_tittle' => 'Admin - Orders',
+            'user_data' => $user,
+            'orders' => $orders,
+        ];
+
+        $this->view("admin/orders", $data); 
     }
 }
 

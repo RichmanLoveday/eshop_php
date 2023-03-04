@@ -4,7 +4,7 @@ use app\core\Models;
 
 Class Orders extends Models {
     
-    public function save_orders($post, $products, $user_id, $session_id, &$countryModel) {
+    public function save_orders($post, $products, $user_url, $session_id, &$countryModel) {
 
         // validate data sent from post
         foreach($post as $key => $value) {
@@ -21,8 +21,7 @@ Class Orders extends Models {
             }
         }
 
-         return;
-        $DB = Database::newInstance();
+        $DB = Database::newInstance();      // Database connection
 
         // get total form cart_qty * price
         $total = 0;
@@ -30,15 +29,15 @@ Class Orders extends Models {
             $total += $item->cart_qty * $item->price;
         }
         // echo $total;
-        show($products);
+       // show($products);
         // show($post); die;
         // store datas
 
-        show($products);
+       // show($products);
 
         if(is_array($products) && count($this->errors) === 0) {
             $data = [];
-            $data['user_url'] = $user_id;
+            $data['user_url'] = $user_url;
             $data['session_id'] = $session_id;
             $data['delivery_address'] =  $post['delivery_address'] . ' ' . $post['address2'];
             $data['zip'] = $post['zip'];
@@ -53,7 +52,7 @@ Class Orders extends Models {
             $data['total'] = $total;
             $data['tax'] = 0;
 
-            // show($data); die;
+           //show($data); die;
 
             $query = "INSERT INTO orders (user_url, delivery_address, total, country, state, tax, zip, shipping, date, session_id, home_phone, mobile_phone) values (:user_url, :delivery_address, :total, :country, :state, :tax, :zip, :shipping, :date, :session_id, :home_phone, :mobile_phone)";
 
@@ -78,12 +77,47 @@ Class Orders extends Models {
                 $data['description'] = $item->description;
                 $data['amount'] = $item->price;
                 $data['total'] = $item->cart_qty * $item->price;
-                show($data);
+                //show($data);
                 $query = "INSERT INTO order_details (orderid, productid, qty, description, amount, total) values (:orderid, :productid, :qty, :description, :amount, :total)";
                 $result = $DB->write($query, $data);
             }
-            die;
+          
         }
+    }
+
+
+    public function get_orders_by_user($user_url) {
+        $DB = Database::newInstance();      // Database connection
+        
+        $query = "SELECT * FROM orders WHERE user_url = :user_url ORDER BY id DESC limit 100";
+        $orders = $DB->read($query, ['user_url' => $user_url]);
+      
+        // check if orders is array
+        return (is_array($orders)) ? $orders : false;
+
+    }
+
+
+    public function get_all_orders() {
+        $DB = Database::newInstance();      // Database connection
+        
+        $query = "SELECT * FROM orders ORDER BY id DESC limit 100";
+        $orders = $DB->read($query);
+      
+        // check if orders is array
+        return (is_array($orders)) ? $orders : false;
+
+    }
+
+
+    public function get_order_details($order_id) {
+        $DB = Database::newInstance();      // Database connection
+        
+        $query = "SELECT * FROM order_details WHERE orderid = :order_id ORDER BY id DESC";
+        $details = $DB->read($query, [':order_id' => $order_id]);
+      
+        // check if orders is array
+        return (is_array($details)) ? $details : false;
     }
 }
 

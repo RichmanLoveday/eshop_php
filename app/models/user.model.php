@@ -116,6 +116,10 @@ Class User extends Models {
         return false;
     }
 
+    public function get_user($user_id) {
+        $db = Database::newInstance();
+        
+    }
 
     public function get_user_row($USER) {
         $url = $USER->url_address;

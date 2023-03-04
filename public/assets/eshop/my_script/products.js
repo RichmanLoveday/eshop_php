@@ -162,7 +162,6 @@ handle_result = function (result) {
                     console.log(modal_message);
                     console.log(modal_message.textContent);
 
-                    close_modal(editProductModal, overlay);
                     show_modal(success_modal);
 
                     // Update table
