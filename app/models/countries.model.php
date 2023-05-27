@@ -3,8 +3,10 @@
 use app\core\Database;
 use app\core\Models;
 
-Class Countries extends Models {
-    public function get_countries() {
+class Countries extends Models
+{
+    public function get_countries()
+    {
         $DB = Database::newInstance();
 
         $query = "SELECT * FROM countries ORDER BY id DESC";
@@ -14,31 +16,41 @@ Class Countries extends Models {
     }
 
 
-    public function get_states($id) {
-        
-        $arr['id'] = (int) $id;
+    public function get_states($country)
+    {
+
+
+        $arr['country'] = addslashes($country);
         $DB = Database::newInstance();
 
-        $query = "SELECT * FROM state WHERE parent = :id ORDER BY parent";
-        $states = $DB->read($query, $arr);
-        //show($states); die;
-        return $states;
+        $query = "SELECT * FROM countries WHERE country = :country limit 1";
+        $check = $DB->read($query, $arr);
+        $state = false;
 
+        if (is_array($check)) {
+            $arr = [];
+            $arr['id'] = $check[0]->id;
+            $query = "SELECT * FROM states WHERE parent = :id ORDER BY parent";
+            $state = $DB->read($query, $arr);
+        }
+
+        return is_array($state) ? $state : false;
     }
 
-    public function get_state($id) {
-        
+    public function get_state($id)
+    {
+
         $arr['id'] = (int) $id;
         $DB = Database::newInstance();
 
-        $query = "SELECT state FROM state WHERE id = :id ORDER BY parent";
+        $query = "SELECT state FROM states WHERE id = :id ORDER BY parent";
         $state = $DB->read($query, $arr);
-       
-        return is_array($state) ? $state[0] : false;
 
+        return is_array($state) ? $state[0] : false;
     }
 
-    public function get_country($id) {
+    public function get_country($id)
+    {
         $arr['id'] = (int) $id;
         $DB = Database::newInstance();
 
@@ -49,15 +61,16 @@ Class Countries extends Models {
     }
 
 
-    public function make_countries($countries) {
-        if(is_array($countries)) {
-            $result = '<option>-- Select Country --</option>';
+    public function make_countries($countries)
+    {
+        if (is_array($countries)) {
+            $result = '';
 
             // loop through
-            foreach($countries as $country) {
-                $result .= 
+            foreach ($countries as $country) {
+                $result .=
                     '
-                        <option value="'.$country->id.'"class="country">'.$country->country.'</option>
+                        <option value="' . $country->country . '"class="country">' . $country->country . '</option>
                     ';
             }
             return $result;
@@ -65,16 +78,17 @@ Class Countries extends Models {
         return false;
     }
 
-    
-    public function make_state($states) {
-        if(is_array($states)) {
-            $result = '<option>-- State / Province / Region --</option>';
+
+    public function make_state($states)
+    {
+        if (is_array($states)) {
+            $result = '';
 
             // loop through
-            foreach($states as $state) {
-                $result .= 
+            foreach ($states as $state) {
+                $result .=
                     '
-                        <option value="'.$state->id.'"class="state">'.$state->state.'</option>
+                        <option value="' . $state->state . '"class="state">' . $state->state . '</option>
                     ';
             }
             return $result;
@@ -82,5 +96,3 @@ Class Countries extends Models {
         return false;
     }
 }
-
-?>

@@ -1,11 +1,14 @@
 <?php
+
 use app\core\Controller;
 use app\models\Auth;
 use app\models\User;
 
-class Checkout extends Controller {
+class Checkout extends Controller
+{
 
-    public function index() {
+    public function index()
+    {
         $data = [];
 
         // Load models
@@ -15,38 +18,39 @@ class Checkout extends Controller {
         $image_class = $this->load_model('Image');
         $user = $this->load_model('User');                // Load user model
         $checkout = $this->load_model('Orders');
-        
+
 
         // check user login and fetch user session datas
-        $USER = Auth::logged_in();
-        //show($USER); die;
-         
+        // check login
+        $USER = (Auth::logged_in()) ? Auth::logged_in()  : false;
+        if (!$USER) $this->redirect('login');
+
         $row1 = ($USER) ? $user->get_user_row($USER) : '';
 
         $prod_ids = [];
         $products = false;
-        
-        if(isset($_SESSION['CART'])) {
+
+        if (isset($_SESSION['CART'])) {
             $ids_str = array_column($_SESSION['CART'], 'id');
-            $prod_ids = "'". implode("','", $ids_str) . "'";
+            $prod_ids = "'" . implode("','", $ids_str) . "'";
             $products = $cart->get_products($prod_ids);
         }
-    
+
         // set sub total variable
         $sub_total = 0;
-        
+
         // loop through products
-        
-        if(is_array($products)) {
-            foreach($products as $key => $row) {
+
+        if (is_array($products)) {
+            foreach ($products as $key => $row) {
                 // resize image
                 $products[$key]->image = $image_class->get_thumb_post($products[$key]->image);
                 // loop through session carts and set cart quantity
-                foreach($_SESSION['CART'] as $item) {
-                   if($row->id == $item->id) {
-                    $products[$key]->cart_qty = $item->qty;
-                    break;
-                   }
+                foreach ($_SESSION['CART'] as $item) {
+                    if ($row->id == $item->id) {
+                        $products[$key]->cart_qty = $item->qty;
+                        break;
+                    }
                 }
                 // Add up sub total
                 $sub_total += $row->price * $row->cart_qty;
@@ -56,41 +60,139 @@ class Checkout extends Controller {
 
         // get countries 
         $countryData = $countries->get_countries();
-        $countryList = ($countries) ? $countries->make_countries($countryData) : '';     
+        $countryList = ($countries) ? $countries->make_countries($countryData) : '';
 
         // sort the products and countries in asc order 
-        if(is_array($products)) rsort($products);
+        if (is_array($products)) rsort($products);
+
+
+        // check if old data exist in session
+        if (isset($_SESSION['POST_DATA'])) {
+            $data['POST_DATA'] = $_SESSION['POST_DATA'];
+        }
 
 
         // check for post variables 
-        if($_SERVER['REQUEST_METHOD'] === 'POST' && count($_POST) > 0) {
-            // show($_POST);
-            // show($products);
-            // show($_SESSION);
-            // echo $USER;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && count($_POST) > 0) {
+            // check if user_id is ready or session_id
+            $user_id = (Auth::logged_in()) ? Auth::logged_in()->url_address : 0;
+            $checkout->validate($_POST);        // validate data
+            $data['errors'] = $checkout->errors;        // store errors
 
+            // save post data in session to use in summary
+            $_SESSION['POST_DATA'] = $_POST;
+            $data['POST_DATA'] = $_POST;
+
+            // redirect to summary page
+            if (count($checkout->errors) == 0) {
+                $this->redirect('checkout/summary');
+            }
+        }
+
+        // show($data['POST_DATA']);
+        // die;
+
+        // Data to send to view
+        $data['page_title'] = 'Checkout';
+        $data['user_data'] = $row1;
+        $data['sub_total'] = $sub_total;
+        $data['countries'] = $countryList;
+        $data['products'] = $products;
+
+        $this->view("checkout", $data);
+    }
+
+
+    public function summary()
+    {
+        // load models
+        $checkout = $this->load_model('Orders');
+        $cart = $this->load_model('CartModel');
+        $countries = $this->load_model('Countries');
+
+        $data = [];
+
+        // check login
+        $user_id = (Auth::logged_in()) ? Auth::logged_in()->url_address : false;
+        if (!$user_id) $this->redirect('login');        // goto login
+
+        // get products
+        $prod_ids = [];
+        $products = false;
+
+        if (isset($_SESSION['CART'])) {
+            $ids_str = array_column($_SESSION['CART'], 'id');
+            $prod_ids = "'" . implode("','", $ids_str) . "'";
+            $products = $cart->get_products($prod_ids);
+        }
+
+        // if cart is empty goto checkout
+        if (!$products) $this->redirect('checkout');
+
+        // set sub total variable
+        $sub_total = 0;
+
+        // loop through products
+        if (is_array($products)) {
+            foreach ($products as $key => $row) {
+                // loop through session carts and set cart quantity
+                foreach ($_SESSION['CART'] as $item) {
+                    if ($row->id == $item->id) {
+                        $products[$key]->cart_qty = $item->qty;
+                        break;
+                    }
+                }
+                // Add up sub total
+                $sub_total += $row->price * $row->cart_qty;
+            }
+        }
+
+        // products selected by customer and order details
+        $data['order_details'] = $products;
+        $data['orders'][] = $_SESSION['POST_DATA'];
+
+
+        // check for post variables 
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['POST_DATA'])) {
             // check if user_id is ready or session_id
             $user_id = (Auth::logged_in()) ? Auth::logged_in()->url_address : 0;
             $session_id = session_id();
 
-            $checkout->save_orders($_POST, $products, $user_id, $session_id, $countries);
-            
-        }
-         
-        // Data to send to view
-        $data = [
-            'page_title' => 'Cart',
-            'user_data' => $row1,
-            'sub_total' => number_format($sub_total, 2),
-            'products' => $products,
-            'products_table' => $cart->make_table($products),
-            'countries' => $countryList,
-            'errors' => $checkout->errors,
-        ];
-    
-        $this->view("checkout", $data);         
-    }
-    
-}
+            $checkout->save_orders($_SESSION['POST_DATA'], $products, $user_id, $session_id, $countries);
 
-?>
+            //  redirect to thank you page
+            $this->redirect('checkout/thank_you');
+        }
+
+        // show($products);
+        // die;
+
+        // show($data['orders']);
+        // die;
+
+        $data['page_title'] = 'Checkout Summary';
+        $data['sub_total'] =  number_format($sub_total, 2);
+
+        $this->view('checkout.summary', $data);
+    }
+
+    public function thank_you()
+    {
+        $data = [];
+
+        // check login
+        $user_id = (Auth::logged_in()) ? Auth::logged_in()->url_address : false;
+        if (!$user_id) $this->redirect('login');        // goto login
+
+        // if cart is empty goto checkout
+        if (empty($_SESSION['CART'])) $this->redirect('checkout');
+
+        // clear post data information, cart and goto thank you page
+        unset($_SESSION['POST_DATA']);
+        unset($_SESSION['CART']);
+
+        $data['page_title'] = 'Thank you';
+
+        $this->view('checkout.thank_you', $data);
+    }
+}

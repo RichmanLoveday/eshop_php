@@ -28,7 +28,3 @@ class Controller {
         die();
     } 
 }
-
-
-
-?>

@@ -8,7 +8,6 @@ const errorFiled = document.querySelector('.errorFild');
 const tableBody = document.querySelector('.table_body');
 
 
-
 const form = document.querySelector('.form');
 const rowDelete = document.querySelector('.row_delete');
 const rowEdit = document.querySelector('.row_edit');
@@ -22,7 +21,7 @@ const spinner = function () {
         allowEscapeKey: false,
         allowOutsideClick: false,
         showSpinner: true,
-        showConfirmButton: false,
+        showConfirmButton: false
     });
     Swal.showLoading();
 }
@@ -36,7 +35,7 @@ const show_modal = function (modal, input = null) {
     console.log('Yesssss');
     console.log(modal)
     console.log(overlay);
-    //console.log(input);
+    // console.log(input);
 
     modal.classList.toggle('show');
     overlay.classList.toggle('show');
@@ -45,8 +44,8 @@ const show_modal = function (modal, input = null) {
     // focus categoory
     if (modal.classList.contains('myModal') || modal.classList.contains('edit_category')) {
         input.focus();
-        btnCloseModal?.addEventListener('click', close_modal.bind(this, catModal, overlay, inputCategoryName));
-        btnCloseEditModal?.addEventListener('click', close_modal.bind(this, editModal, overlay, inputCategoryName));
+        btnCloseModal ?. addEventListener('click', close_modal.bind(this, catModal, overlay, inputCategoryName));
+        btnCloseEditModal ?. addEventListener('click', close_modal.bind(this, editModal, overlay, inputCategoryName));
 
         overlay.addEventListener('click', close_modal.bind(this, catModal, overlay, input));
         overlay.addEventListener('click', close_modal.bind(this, editModal, overlay, input));
@@ -57,16 +56,19 @@ const show_modal = function (modal, input = null) {
 
         modal.addEventListener('click', function (e) {
             console.log(e)
-            if (!e.target.classList.contains('add')) return;
+            if (! e.target.classList.contains('add')) 
+                return;
+            
 
-            const image = e.target;         // store click image element
+
+            const image = e.target; // store click image element
             console.log(image.name);
 
             display_image(image, input.imagesAdd);
         });
 
         overlay.addEventListener('click', close_modal.bind(this, productModal, overlay, input));
-        btnCloseModal?.addEventListener('click', close_modal.bind(this, productModal, overlay, input));
+        btnCloseModal ?. addEventListener('click', close_modal.bind(this, productModal, overlay, input));
     }
 
     if (modal.classList.contains('edit_product_modal')) {
@@ -84,11 +86,11 @@ const show_modal = function (modal, input = null) {
         input.preview_image2.src = (input.data.image2 !== 'number') ? input.preview_image2.dataset.url + input.data.image2 : '';
         input.preview_image3.src = (input.data.image3 !== 'number') ? input.preview_image3.dataset.url + input.data.image3 : '';
         input.preview_image4.src = (input.data.image4 !== 'number') ? input.preview_image4.dataset.url + input.data.image4 : '';
-        input.productQuantity.value = +input.data.quantity;
-        input.productPrice.value = +input.data.price;
+        input.productQuantity.value = + input.data.quantity;
+        input.productPrice.value = + input.data.price;
 
         overlay.addEventListener('click', close_modal.bind(this, editProductModal, overlay, editInput));
-        btnCloseModal?.addEventListener('click', close_modal.bind(this, editProductModal, overlay, editInput));
+        btnCloseModal ?. addEventListener('click', close_modal.bind(this, editProductModal, overlay, editInput));
     }
 
 
@@ -120,14 +122,12 @@ const close_modal = function (modal, overlay, input = null,) {
         console.log(input);
         if (input !== null) {
             Object.values(input).forEach((input, index) => {
-                if (index !== 8) {
-                    // clear value
+                if (index !== 8) { // clear value
                     input.value = '';
                     input.classList.remove('errInput');
                 } else {
                     console.log(input);
-                    input.forEach(ele => {
-                        // Hide preview images
+                    input.forEach(ele => { // Hide preview images
                         ele.classList.add('hide');
                     })
                 }
@@ -143,14 +143,12 @@ const close_modal = function (modal, overlay, input = null,) {
         if (input !== null) {
             console.log(input);
             Object.values(input).forEach((input, index) => {
-                if (index !== 8) {
-                    // clear value
+                if (index !== 8) { // clear value
                     input.value = '';
                     input.classList.remove('errInput');
                 } else {
                     console.log(input);
-                    index.forEach(ele => {
-                        // Hide preview images
+                    index.forEach(ele => { // Hide preview images
                         ele.classList.add('hide');
                     })
                 }
@@ -172,12 +170,10 @@ const close_modal = function (modal, overlay, input = null,) {
 
 // Send result ajax
 const send_data = async function (url, data = {}, handle_result) {
-    // console.log(url)
+    console.log(data)
     const form = new FormData();
     form.append('data', data)
-    const res = await axios.post(url, data, {
-        "Content-Type": "multipart/form-data"
-    });
+    const res = await axios.post(url, data, {"Content-Type": "multipart/form-data"});
 
     // console.log(data);
     // console.log(res.data);
@@ -191,9 +187,7 @@ const send_data_files = async function (url, data, handle_result) {
     console.log(data);
     // load spinner
     spinner();
-    const res = await axios.post(url, data, {
-        "Content-Type": "multipart/form-data"
-    });
+    const res = await axios.post(url, data, {"Content-Type": "multipart/form-data"});
 
     if (res) {
         closeSpinner();
@@ -206,16 +200,13 @@ const send_data_files = async function (url, data, handle_result) {
 // Get result ajax
 const get_data = async function (url, data = {}) {
     console.log(data);
-    const res = await axios.post(url, data, {
-        "Content-Type": "multipart/form-data"
-    });
+    const res = await axios.post(url, data, {"Content-Type": "multipart/form-data"});
     return res.data;
-    //handle_result(res.data);
+    // handle_result(res.data);
 };
 
 
-const collect_data = function (input, errMsg, data_type, handle_result, e) {
-    //console.log('clicked');
+const collect_data = function (input, errMsg, data_type, handle_result, e) { // console.log('clicked');
     console.log(input);
     if (data_type === 'add_category') {
         const url = e.target.dataset.url;
@@ -239,15 +230,19 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) {
         }
 
         // Send data to ajax
-        if (!err) {
-            send_data(url, { category: category, parent: parent, data_type: 'add_category' }, handle_result);
+        if (! err) {
+            send_data(url, {
+                category: category,
+                parent: parent,
+                data_type: 'add_category'
+            }, handle_result);
         }
     }
 
 
     if (data_type === 'add_product') {
         const url = e.target.dataset.url;
-        const form = new FormData();        // Form data
+        const form = new FormData(); // Form data
         console.log(url);
         console.log(input)
         let err = false;
@@ -294,9 +289,7 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) {
         }
 
         console.log(url, err);
-        if (!err) {
-
-            // form data to be sent to post
+        if (! err) { // form data to be sent to post
             console.log(form);
             form.append('description', input.productName.value.trim());
             form.append('quantity', input.productQuantity.value.trim());
@@ -359,8 +352,13 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
 
         console.log(err);
         // Send data to ajax
-        if (!err) {
-            send_data(url, { id: id, category_edit: category, parent_edit: parent, data_type: 'edit_category' }, handle_result);
+        if (! err) {
+            send_data(url, {
+                id: id,
+                category_edit: category,
+                parent_edit: parent,
+                data_type: 'edit_category'
+            }, handle_result);
         }
     }
 
@@ -416,7 +414,7 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
 
         console.log(url, err);
         console.log(input);
-        if (!err) {
+        if (! err) {
             const data = new FormData();
             // form data to be sent to post
             data.append('id', input.productId.dataset.rowid);
@@ -464,8 +462,3 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
         }
     }
 };
-
-
-
-
-

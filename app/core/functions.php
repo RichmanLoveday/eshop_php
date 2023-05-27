@@ -1,44 +1,44 @@
 <?php
 
-function show($data) {
+function show($data)
+{
     echo "<pre>";
     print_r($data);
     echo "<pre>";
 }
 
 // Generate random string 
-function get_random_string(int $lenght): string {
+function get_random_string(int $lenght): string
+{
 
-    $array = ["*", "/",0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    $array = ["*", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     $text = '';
-    for($x = 0; $x < $lenght; $x++) {
-        $random = rand(0,63);
+    for ($x = 0; $x < $lenght; $x++) {
+        $random = rand(0, 62);
         $text .= $array[$random];
-
     }
     return $text;
-
 }
 
-function print_error(array $data, string $errType) {
-    if(isset($data['errors'][$errType])) {
-        return "<div class=error>".$data['errors'][$errType]."</div>";
-    } 
+function print_error(array $data, string $errType)
+{
+    if (isset($data['errors'][$errType])) {
+        return "<div class=error>" . $data['errors'][$errType] . "</div>";
+    }
 }
 
-function get_var(string $key, $default = NULL) {
-    if(isset($_POST[$key])) {
+function get_var(string $key, $default = NULL)
+{
+    if (isset($_POST[$key])) {
         return $_POST[$key];
-    }elseif(isset($_GET[$key])) {
+    } elseif (isset($_GET[$key])) {
         return $_GET[$key];
-    } 
+    }
     return $default;
 }
 
 
-function esc($data) {
+function esc($data)
+{
     return addslashes($data);
 }
-
-
-?>
