@@ -97,6 +97,21 @@ class Category extends Models
         return $category;
     }
 
+    public function get_cat_by_name($name)
+    {
+
+        $name = addslashes($name);
+
+        $DB = Database::newInstance();
+        $query = "SELECT * FROM categories WHERE category like :category AND disabled = :status limit 1";
+        $category = $DB->read($query, ['category' => $name, 'status' => '0']);
+
+        if (empty($category)) return false;
+
+        return $category[0];
+    }
+
+
 
     public function make_table($cats)
     {

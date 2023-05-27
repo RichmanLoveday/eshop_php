@@ -44,6 +44,7 @@ class Home extends Controller
         // Data to send to view
         $data = [
             'page_title' => 'Home',
+            //'SETTINGS' => $this->get_all_setting_as_object(),
             'user_data' => $row,
             'featured_items' => $featured_items,
             'categories' => $category->get_active_cat(),

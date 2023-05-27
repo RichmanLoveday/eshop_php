@@ -7,6 +7,7 @@ use app\models\User;
 class Admin extends Controller
 {
 
+
     public function index()
     {
         $data = [];
@@ -183,5 +184,39 @@ class Admin extends Controller
         // View
         ($role == 'admins') ? $this->view("admin/admins", $data) :
             $this->view("admin/users", $data);
+    }
+
+
+    public function settings(string $type)
+    {
+        // load models
+        $user = $this->load_model('User');                // Load user model
+        //$setting = $this->load_model('settings');
+        $setting = new Settings();
+        $url = Auth::logged_in();
+
+        // check for login
+        if (!$url || !Auth::access('admin')) $this->redirect('login');
+
+        //  Load admin data
+        $user_row = $user->get_user_row($url);
+
+        // check for post variables
+        // show($_POST);
+        // die;
+        if (count($_POST) > 0) {
+            $setting->save($_POST);
+            $this->redirect('admin/settings/socials');
+        }
+
+        // data sent to view
+        $data = [
+            'page_tittle' => "Admin - $type",
+            // 'users' => $users,
+            'user_data' => $user_row,
+            'settings' =>  $setting->get_all(),
+        ];
+
+        $this->view("admin/socials", $data);
     }
 }

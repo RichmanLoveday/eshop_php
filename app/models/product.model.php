@@ -210,6 +210,18 @@ class Product extends Models
     }
 
 
+    public function get_products_by_cat_id($cat_id)
+    {
+        $db = Database::newInstance();
+
+        $query = "SELECT * FROM products WHERE category = :cat_id ";
+        $rows = $db->read($query, ['cat_id' => $cat_id]);
+
+        if (empty($rows)) return false;
+
+        return $rows;
+    }
+
     public function single_product($slag)
     {
         $db = Database::newInstance();
