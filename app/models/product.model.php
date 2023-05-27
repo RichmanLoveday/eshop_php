@@ -22,7 +22,7 @@ Class Product extends Models {
         if(!preg_match("/^[a-zA-Z 0-9._\-,]+$/", trim($arr['description']))) {
             $this->errors['errorDescription'] = 'Please input a description name';
             $error = true;
-        } 
+        }           
 
         if(!is_numeric($arr['quantity'])) {
             $this->errors['errorQty'] = 'Please enter a valid quantity';
@@ -55,8 +55,9 @@ Class Product extends Models {
         $arr["image3"] = "";
         $arr["image4"] = "";
         
-        // Rules for for 
+        // Rules for image uploads
         $allowed[] = "image/jpeg";
+        
         $size = 10;
         $size = ($size * 1024 * 1024);
         

@@ -104,7 +104,7 @@ Class Orders extends Models {
         $query = "SELECT * FROM orders ORDER BY id DESC limit 100";
         $orders = $DB->read($query);
       
-        // check if orders is array
+    // check if orders is array
         return (is_array($orders)) ? $orders : false;
 
     }

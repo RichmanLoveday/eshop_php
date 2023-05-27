@@ -105,7 +105,7 @@ class Admin extends Controller {
         if(!$url || !Auth::access('admin')) $this->redirect('login');         // Redirect user to home
 
         //  Load user data
-        $user = $user->get_user_row($url);
+        $user_row = $user->get_user_row($url);
         
 
         // get orders details
@@ -115,7 +115,13 @@ class Admin extends Controller {
             // get orders details
             foreach($orders as $key => $row) {
                 $orders[$key]->details = $order->get_order_details($row->id);
-                $orders[$key]->grand_total = number_format(array_sum(array_column($orders[$key]->details, 'total')));
+                $orders[$key]->grand_total = 0;
+
+                if(is_array($orders[$key]->details)) {
+                    $orders[$key]->grand_total = number_format(array_sum(array_column($orders[$key]->details, 'total')));
+                }
+
+                $orders[$key]->user = $user->get_user($row->user_url);
             }
         }
 
@@ -123,7 +129,7 @@ class Admin extends Controller {
         // data sent to view
         $data = [
             'page_tittle' => 'Admin - Orders',
-            'user_data' => $user,
+            'user_data' => $user_row,
             'orders' => $orders,
         ];
 

@@ -70,7 +70,7 @@ Class User extends Models {
         }
 
         return false;
-        
+
     }
 
     public function login($POST ) {
@@ -116,15 +116,21 @@ Class User extends Models {
         return false;
     }
 
-    public function get_user($user_id) {
+    public function get_user($user_url) {
         $db = Database::newInstance();
+
+        $query = "SELECT * FROM users WHERE url_address = :url limit 1";
+        $row = $db->read($query, [':url' => $user_url]);
+
+        return ($row) ? $row[0] : false;
         
     }
 
     public function get_user_row($USER) {
+        $db = Database::getInstance();      // Database instance
+
         $url = $USER->url_address;
         $query = "SELECT * FROM users WHERE url_address = :url limit 1";
-        $db = Database::getInstance();      // Database instance
         $row = $db->read($query, [':url' => $url]);
 
         if(!$row) return false;
