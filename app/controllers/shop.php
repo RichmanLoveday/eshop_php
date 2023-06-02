@@ -6,7 +6,6 @@ use app\models\User;
 
 class Shop extends Controller
 {
-    use Settings;
     public function index()
     {
         $search = false;
@@ -45,7 +44,6 @@ class Shop extends Controller
         // Data to send to view
         $data = [
             'page_title' => 'Shop',
-            'SETTINGS' => $this->get_all_setting_as_object(),
             'user_data' => $row,
             'featured_items' => $featured_items,
             'categories' => $category->get_active_cat(),
@@ -87,7 +85,6 @@ class Shop extends Controller
 
 
         $data['page_title'] = 'Shop';
-        $data['SETTINGS'] = $this->get_all_setting_as_object();
         $data['featured_items'] = $featured_items;
         $data['categories'] = $category->get_active_cat();
 

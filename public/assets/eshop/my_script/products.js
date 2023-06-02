@@ -9,7 +9,6 @@ const imagesEdit = document.querySelectorAll('.img_edit');
 const imagesAdd = document.querySelectorAll('.img_add');
 
 
-
 // INPUT DETAILS
 const input = {
     productName: document.querySelector('.product_name'),
@@ -20,7 +19,7 @@ const input = {
     productImage2: document.querySelector('.image2'),
     productImage3: document.querySelector('.image3'),
     productImage4: document.querySelector('.image4'),
-    imagesAdd: imagesAdd,
+    imagesAdd: imagesAdd
 };
 
 
@@ -43,7 +42,7 @@ const editInput = {
     preview_image3: document.querySelector('.preview_image3'),
     preview_image4: document.querySelector('.preview_image4'),
 
-    //imagesEdit: imagesEdit,
+    // imagesEdit: imagesEdit,
 };
 
 const display_image = function (target, nodelist) {
@@ -65,15 +64,14 @@ const display_image = function (target, nodelist) {
     }
 
     // Listen to event
-    target.addEventListener('change', function (e) {
-        // set the preview images
+    target.addEventListener('change', function (e) { // set the preview images
         console.log(target.files);
         nodelist[number].classList.remove('hide');
         nodelist[number].src = URL.createObjectURL(target.files[0]);
     });
 }
 
-btnAddProduct.addEventListener('click', show_modal.bind(this, productModal, input));
+btnAddProduct ?. addEventListener('click', show_modal.bind(this, productModal, input));
 
 // btnCloseModal?.addEventListener('click', close_modal.bind(this, productModal, overlay, inputCategoryName));
 
@@ -125,12 +123,7 @@ handle_result = function (result) {
         if (obj.data_type === 'delete_product') {
             if (typeof obj.message_type !== 'undefined') {
                 if (obj.message_type === 'info') {
-                    Swal.fire({
-                        title: 'Deleted!',
-                        customClass: 'swal',
-                        icon: 'success',
-                        text: obj.message,
-                    })
+                    Swal.fire({title: 'Deleted!', customClass: 'swal', icon: 'success', text: obj.message})
                     // Update table
                     tableBody.innerHTML = obj.data;
 
@@ -145,7 +138,7 @@ handle_result = function (result) {
             if (typeof obj.message_type !== 'undefined') {
                 if (obj.message_type === 'info') {
                     // alert(obj.message);
-                    //console.log(obj.data)
+                    // console.log(obj.data)
                     // Update table
                     tableBody.innerHTML = obj.data;
                 } else {
@@ -173,7 +166,7 @@ handle_result = function (result) {
                     }, 5000);
 
                     // Update table
-                    //console.log(data);
+                    // console.log(data);
                     tableBody.innerHTML = obj.data;
                 } else {
                     alert(obj.message);
@@ -208,32 +201,42 @@ handle_result = function (result) {
 };
 
 // Add new product
-btnAddNewProduct?.addEventListener('click', collect_data.bind(this, input, 'Please enter a value here', 'add_product', handle_result));
+btnAddNewProduct ?. addEventListener('click', collect_data.bind(this, input, 'Please enter a value here', 'add_product', handle_result));
 
 
 // Edit and delete Row
 
-const edit_product_row = async function (e) {
-    // console.log(e);
-    if (!e.target.classList.contains('editProduct')) return;
+const edit_product_row = async function (e) { // console.log(e);
+    if (! e.target.classList.contains('editProduct')) 
+        return;
+    
+
 
     console.log(e.target.dataset);
     const id = e.target.dataset.rowid;
     const url = e.target.dataset.rowurl;
     console.log(typeof url, url);
-    const data = await get_data(url, { id: id, type: 'get', data_type: 'get_product_data' });
+    const data = await get_data(url, {
+        id: id,
+        type: 'get',
+        data_type: 'get_product_data'
+    });
 
-    editInput.data = data;      // add data to editInput object
+    editInput.data = data;
+    // add data to editInput object
 
     // show modal of edit productModal
     show_modal(editProductModal, editInput);
 
-    // Add event listener to product images 
+    // Add event listener to product images
     editProductModal.addEventListener('click', function (e) {
 
-        if (!e.target.classList.contains('edit')) return;
+        if (! e.target.classList.contains('edit')) 
+            return;
+        
 
-        const image = e.target;         // store click image element
+
+        const image = e.target; // store click image element
         console.log(image.name);
 
         // display image on field elements
@@ -242,13 +245,16 @@ const edit_product_row = async function (e) {
     });
 
     // Even listener for submit btn
-    btnEditProduct?.addEventListener('click', collect_edit_data.bind(this, url, editInput, 'edit_product', 'Please input here', handle_result));
+    btnEditProduct ?. addEventListener('click', collect_edit_data.bind(this, url, editInput, 'edit_product', 'Please input here', handle_result));
 };
 tableBody.addEventListener('click', edit_product_row);
 
 
 const delete_product_row = function (e) {
-    if (!e.target.classList.contains('deleteProduct')) return;
+    if (! e.target.classList.contains('deleteProduct')) 
+        return;
+    
+
     console.log(e.target);
 
     const url = e.target.dataset.rowurl;
@@ -265,11 +271,12 @@ const delete_product_row = function (e) {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
-        if (result.isConfirmed) {
-            // data sent to php
-            send_data(url, { id: id, data_type: 'delete_product' }, handle_result);
+        if (result.isConfirmed) { // data sent to php
+            send_data(url, {
+                id: id,
+                data_type: 'delete_product'
+            }, handle_result);
         }
     })
 }
 tableBody.addEventListener('click', delete_product_row);
-

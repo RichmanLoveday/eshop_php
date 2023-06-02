@@ -55,6 +55,7 @@ class Admin extends Controller
         // Data to send to view
         $data = [
             'page_tittle' => 'Admin - categories',
+            'current_page' => 'categories',
             'user_data' => $row,
             'table_row' => $table_row ?? null,
             'categories' => $category->make_parent($cats_some),
@@ -94,6 +95,7 @@ class Admin extends Controller
         // Data to send to view
         $data = [
             'page_tittle' => 'Admin - Products',
+            'current_page' => 'products',
             'user_data' => $row,
             'categories' => (!$category_data) ? 'No category found' : $category_data,
             'table_row' => !empty($table_row) ? $table_row : 'No record found',
@@ -135,6 +137,7 @@ class Admin extends Controller
         // data sent to view
         $data = [
             'page_tittle' => 'Admin - Orders',
+            'current_page' => 'orders',
             'user_data' => $user_row,
             'orders' => $orders,
         ];
@@ -174,6 +177,7 @@ class Admin extends Controller
         // data sent to view
         $data = [
             'page_tittle' => "Admin - $role",
+            'current_page' => 'users',
             'users' => $users,
             'user_data' => $user_row,
         ];
@@ -187,11 +191,12 @@ class Admin extends Controller
     }
 
 
-    public function settings(string $type)
+    public function settings(string $type = '')
     {
         // load models
         $user = $this->load_model('User');                // Load user model
         //$setting = $this->load_model('settings');
+        $slider = $this->load_model('slider');
         $setting = new Settings();
         $url = Auth::logged_in();
 
@@ -204,19 +209,28 @@ class Admin extends Controller
         // check for post variables
         // show($_POST);
         // die;
-        if (count($_POST) > 0) {
-            $setting->save($_POST);
-            $this->redirect('admin/settings/socials');
+
+        if ($type == 'socials') {
+            if (count($_POST) > 0) {
+                $setting->save($_POST);
+                $this->redirect('admin/settings/socials');
+            }
+
+            $data['settings'] = $setting->get_all();
+            $data['type'] = 'socials';
+        }
+
+        if ($type == 'sliderImages') {
+            $data['type'] = 'sliderImages';
+            $data['slider_details'] = $slider->get_all();
         }
 
         // data sent to view
-        $data = [
-            'page_tittle' => "Admin - $type",
-            // 'users' => $users,
-            'user_data' => $user_row,
-            'settings' =>  $setting->get_all(),
-        ];
+        $data['current_page'] = 'settings';
+        $data['page_tittle'] = "Admin - $type";
+        $data['user_data'] = $user_row;
 
-        $this->view("admin/socials", $data);
+
+        $this->view("admin/settings", $data);
     }
 }
