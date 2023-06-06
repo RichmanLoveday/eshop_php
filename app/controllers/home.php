@@ -18,6 +18,7 @@ class Home extends Controller
 
         $product = $this->load_model('product');
         $image_class = $this->load_model('Image');
+        $slider = $this->load_model('slider');
         $user = $this->load_model('User');                // Load user model
         $category = $this->load_model('category');
 
@@ -38,9 +39,18 @@ class Home extends Controller
             }
         }
 
+        $sliders = $slider->get_all();
+        if ($sliders) {
+            foreach ($sliders as $key => $item) {
+                $sliders[$key]->image = $image_class->get_thumb_post($sliders[$key]->image, 484, 441);
+            }
+        }
+
         // show($featured_items);
         // die;
 
+        // show($slider->get_all());
+        // die;
         // Data to send to view
         $data = [
             'page_title' => 'Home',
@@ -48,6 +58,7 @@ class Home extends Controller
             'user_data' => $row,
             'featured_items' => $featured_items,
             'categories' => $category->get_active_cat(),
+            'sliders' => $sliders,
             'show_search' => true,
         ];
 

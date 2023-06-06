@@ -233,4 +233,77 @@ class Admin extends Controller
 
         $this->view("admin/settings", $data);
     }
+
+    public function messages($type = '')
+    {
+
+        // load models
+        $user = $this->load_model('User');                // Load user model
+        $order = $this->load_model('Orders');
+        $Message = $this->load_model('message');
+        $url = Auth::logged_in();
+
+        // check for login
+        if (!$url || !Auth::access('admin')) $this->redirect('login');         // Redirect user to home
+
+        // check for access
+
+        //  Load admin data
+        $user_row = $user->get_user_row($url);
+
+        // load messages
+        $messeges = $Message->get_all();
+
+        // data sent to view
+        $data = [
+            'page_tittle' => "Admin - messages",
+            'current_page' => 'messages',
+            'user_data' => $user_row,
+            'messages' => $messeges,
+        ];
+
+        // show($users);
+        // die;
+        // die;
+        // View
+
+        $this->view("admin/messages", $data);
+    }
+
+    public function blogs($type = '')
+    {
+
+        // load models
+        $user = $this->load_model('User');                // Load user model
+        $Blog = $this->load_model('Blog');
+        $url = Auth::logged_in();
+
+        // check for login
+        if (!$url || !Auth::access('admin')) $this->redirect('login');         // Redirect user to home
+
+        // check for access
+
+        //  Load admin data
+        $user_row = $user->get_user_row($url);
+
+        // load messages
+        // $blogs = $Blog->get_all();
+
+        // show($messeges);
+        // die;
+        // data sent to view
+        $data = [
+            'page_tittle' => "Admin - blogs",
+            'current_page' => 'messages',
+            'user_data' => $user_row,
+            'blogs' => $Blog->get_all(),
+        ];
+
+        // show($users);
+        // die;
+        // die;
+        // View
+
+        $this->view("admin/blogs", $data);
+    }
 }

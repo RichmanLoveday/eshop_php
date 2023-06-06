@@ -7,6 +7,7 @@ class App {
 
     public function __construct() {
         $url = $this->parseURL();
+        $url[0] = str_replace('-', '_', $url[0]);
         // show($url);
 
         // URL Router design 
@@ -43,6 +44,3 @@ class App {
     }
     
 }
-
-
-?>

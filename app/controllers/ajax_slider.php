@@ -36,6 +36,8 @@ class Ajax_slider extends Controller
             $data['text'] = $lastUpdateSlider->text;
             $data['link'] = $lastUpdateSlider->link;
             $data['image'] = ROOT . $lastUpdateSlider->image;
+            $data['message'] = $slider->success_message;
+            $data['error'] = false;
             $data['status'] = $lastUpdateSlider->disabled;
         }
 

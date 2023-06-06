@@ -79,8 +79,6 @@ handle_result = function (result) {
     console.log(result);
     if (result !== "") {
         const obj = result;
-        console.log(obj.message);
-        console.log('Yes')
         if (obj.data_type === 'add_new') {
             if (typeof obj.message_type !== 'undefined') {
                 console.log(obj);
@@ -254,6 +252,7 @@ const delete_product_row = function (e) {
     if (! e.target.classList.contains('deleteProduct')) 
         return;
     
+
 
     console.log(e.target);
 

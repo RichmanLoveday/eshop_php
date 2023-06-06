@@ -229,7 +229,7 @@ class Image
 	}
 
 	//create thumbnail for post image
-	public function get_thumb_post($filename)
+	public function get_thumb_post($filename, $width = 600, $height = 600)
 	{
 
 		$thumbnail = $filename . "_post_thumb.jpg";
@@ -237,7 +237,7 @@ class Image
 			return $thumbnail;
 		}
 
-		$this->crop_image($filename, $thumbnail, 600, 600);
+		$this->crop_image($filename, $thumbnail, $width, $height);
 
 		if (file_exists($thumbnail)) {
 			return $thumbnail;

@@ -1,6 +1,6 @@
-const addSlider = document.querySelector('.add_slider');
-const headerTextOne = document.querySelector('.header_text_one');
-const headerTextTwo = document.querySelector('.header_text_two');
+const addSlider = document.querySelector('.add_slider') ?? '';
+const headerTextOne = document.querySelector('.header_text_one') ?? '';
+const headerTextTwo = document.querySelector('.header_text_two') ?? '';
 const contentLink = document.querySelector('.content_link');
 const mainMessage = document.querySelector('.main_message');
 const slider_image = document.querySelector('.slider_image');
@@ -98,10 +98,7 @@ const validate_input = async (e) => {
         slider_image.classList.add('errInput');
         err = true;
 
-    } else {
-        err = false;
     }
-
 
     if (! err) { // send data to ajax
         const data = new FormData();
@@ -118,24 +115,45 @@ const validate_input = async (e) => {
 
 
         // handle responses
-        let slider = `<tr><td>${
-            res.data.header1_text
-        }</td><td>${
-            res.data.header2_text
-        }</td><td>${
-            res.data.text
-        }</td><td><a href="${
-            res.data.link
-        }">${
-            res.data.link
-        }</a></td><td><img src="${
-            res.data.image
-        }" style="width:50px; height:50px"></td><td>${
-            res.data.status ? 'Yes' : 'No'
-        }</td></tr>`;
 
-        sliderDetails.insertAdjacentHTML('beforeend', slider)
+        if (! res.data.error) {
+            let slider = `<tr><td>${
+                res.data.header1_text
+            }</td><td>${
+                res.data.header2_text
+            }</td><td>${
+                res.data.text
+            }</td><td><a href="${
+                res.data.link
+            }">${
+                res.data.link
+            }</a></td><td><img src="${
+                res.data.image
+            }" style="width:50px; height:50px"></td><td>${
+                res.data.status ? 'Yes' : 'No'
+            }</td></tr>`;
 
+            sliderDetails.insertAdjacentHTML('beforeend', slider);
+
+            // slear modal
+            hide_modal(modal, overlay);
+
+            // display alert
+            let timerInterval;
+            swal({
+                title: "Success",
+                text: `${
+                    res.data.message
+                }`,
+                icon: "success",
+                timer: 3000,
+                showConfirmButton: false,
+                willClose: () => {
+                    clearInterval(timerInterval)
+                }
+            });
+
+        }
     }
 
 
