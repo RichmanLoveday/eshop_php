@@ -275,7 +275,8 @@ class Admin extends Controller
 
         // load models
         $user = $this->load_model('User');                // Load user model
-        $Blog = $this->load_model('Blog');
+        $Blog = $this->load_model('Blogs');
+        $image_class = $this->load_model('image');
         $url = Auth::logged_in();
 
         // check for login
@@ -287,7 +288,18 @@ class Admin extends Controller
         $user_row = $user->get_user_row($url);
 
         // load messages
-        // $blogs = $Blog->get_all();
+        $blogs = $Blog->get_all();
+
+
+        // get user data
+        foreach ($blogs as $key => $value) {
+            if (file_exists($blogs[$key]->image)) {
+                $blogs[$key]->image = $image_class->get_thumb_post($blogs[$key]->image);
+            }
+
+            // user data
+            $blogs[$key]->user_data = $user->get_user($blogs[$key]->user_url);
+        }
 
         // show($messeges);
         // die;
@@ -296,7 +308,8 @@ class Admin extends Controller
             'page_tittle' => "Admin - blogs",
             'current_page' => 'messages',
             'user_data' => $user_row,
-            'blogs' => $Blog->get_all(),
+            'current_page' => 'blogs',
+            'blogs' => $blogs,
         ];
 
         // show($users);

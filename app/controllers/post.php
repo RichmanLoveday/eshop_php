@@ -4,11 +4,12 @@ use app\core\Controller;
 use app\models\Auth;
 use app\models\User;
 
-class Blog extends Controller
+class Post extends Controller
 {
 
-    public function index()
+    public function index($url_address = '')
     {
+
 
         // check for searches
         $search = false;
@@ -30,23 +31,19 @@ class Blog extends Controller
             $find = '%' . $_GET['find'] . '%';
             $blogs = $blog->get_all($find);
         } else {
-            $blogs = $blog->get_all();
+            $blogs = $blog->get_single_blog($url_address);
         }
-
 
         if ($blogs) {
-            foreach ($blogs as $key => $item) {
-                $blogs[$key]->image = ROOT . $image_class->get_thumb_blog_post($blogs[$key]->image);
-            }
+            $blogs[0]->image = ROOT . $image_class->get_thumb_blog_post($blogs[0]->image);
         }
-        // show($blogs);
-        // die;
+
 
         // show($slider->get_all());
         // die;
         // Data to send to view
 
-        $data['page_title'] = 'Blogs';
+        $data['page_title'] = 'Post Unknown';
         $data['user_data'] = $row;
         $data['show_search'] = true;
         $data['blogs'] = $blogs;
@@ -61,6 +58,6 @@ class Blog extends Controller
         //     'show_search' => true,
         // ];
 
-        $this->view("blog", $data);
+        $this->view("single_blog", $data);
     }
 }
