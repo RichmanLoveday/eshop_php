@@ -7,6 +7,13 @@ use app\models\User;
 class Admin extends Controller
 {
 
+    public $limit = 2;
+    public $offset;
+    public function __construct()
+    {
+        // get page offset
+        $this->offset = Pagination::get_offset($this->limit);
+    }
 
     public function index()
     {
@@ -288,19 +295,20 @@ class Admin extends Controller
         $user_row = $user->get_user_row($url);
 
         // load messages
-        $blogs = $Blog->get_all();
+        $blogs = $Blog->get_all(null, $this->limit, $this->offset);
 
 
         // get user data
-        foreach ($blogs as $key => $value) {
-            if (file_exists($blogs[$key]->image)) {
-                $blogs[$key]->image = $image_class->get_thumb_post($blogs[$key]->image);
+        if (isset($blogs) && is_array($blogs)) {
+            foreach ($blogs as $key => $value) {
+                if (file_exists($blogs[$key]->image)) {
+                    $blogs[$key]->image = $image_class->get_thumb_post($blogs[$key]->image);
+                }
+
+                // user data
+                $blogs[$key]->user_data = $user->get_user($blogs[$key]->user_url);
             }
-
-            // user data
-            $blogs[$key]->user_data = $user->get_user($blogs[$key]->user_url);
         }
-
         // show($messeges);
         // die;
         // data sent to view

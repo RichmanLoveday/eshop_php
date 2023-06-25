@@ -6,6 +6,13 @@ use app\models\User;
 
 class Home extends Controller
 {
+    public $limit = 10;
+    public $offset;
+    public function __construct()
+    {
+        // get page offset
+        $this->offset = Pagination::get_offset($this->limit);
+    }
 
     public function index()
     {
@@ -30,7 +37,7 @@ class Home extends Controller
         $row = ($USER) ? $user->get_user_row($USER) : '';
 
         // Get featured items
-        $featured_items = $product->featured_items();
+        $featured_items = $product->featured_items(null, $this->limit, $this->offset);
 
         // resize image
         if ($featured_items) {

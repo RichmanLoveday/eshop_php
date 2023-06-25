@@ -6,6 +6,13 @@ use app\models\User;
 
 class Blog extends Controller
 {
+    public $limit = 2;
+    public $offset;
+    public function __construct()
+    {
+        // get page offset
+        $this->offset = Pagination::get_offset($this->limit);
+    }
 
     public function index()
     {
@@ -30,7 +37,7 @@ class Blog extends Controller
             $find = '%' . $_GET['find'] . '%';
             $blogs = $blog->get_all($find);
         } else {
-            $blogs = $blog->get_all();
+            $blogs = $blog->get_all(null, $this->limit, $this->offset);
         }
 
 
