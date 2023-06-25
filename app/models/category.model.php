@@ -89,7 +89,7 @@ class Category extends Models
     {
 
         $DB = Database::newInstance();
-        $query = "SELECT * FROM categories WHERE disabled = '0'";
+        $query = "SELECT * FROM categories WHERE disabled = '0' order by views desc";
         $category = $DB->read($query);
 
         if (empty($category)) return false;
@@ -106,7 +106,11 @@ class Category extends Models
         $query = "SELECT * FROM categories WHERE category like :category AND disabled = :status limit 1";
         $category = $DB->read($query, ['category' => $name, 'status' => '0']);
 
-        if (empty($category)) return false;
+        if (is_array($category)) {
+            $DB->write("UPDATE categories SET views = views + 1 where id = :id limit 1", ['id' => $category[0]->id]);
+        } else {
+            return false;
+        }
 
         return $category[0];
     }

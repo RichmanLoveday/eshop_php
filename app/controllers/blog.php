@@ -36,6 +36,7 @@ class Blog extends Controller
 
         if ($blogs) {
             foreach ($blogs as $key => $item) {
+                $blogs[$key]->name = $user->get_user_by_admin($blogs[$key]->user_url)->name;
                 $blogs[$key]->image = ROOT . $image_class->get_thumb_blog_post($blogs[$key]->image);
             }
         }

@@ -127,20 +127,23 @@ class User extends Models
 
     public function get_user_row($USER)
     {
-        $db = Database::getInstance();      // Database instance
+        //show($USER);
+        $db = Database::newInstance();      // Database instance
 
         $url = $USER->url_address;
-        $query = "SELECT * FROM users WHERE url_address = :url limit 1";
-        $row = $db->read($query, [':url' => $url]);
+        $query = "SELECT * FROM users WHERE url_address = :url_address limit 1";
+        $row = $db->read($query, [':url_address' => $url]);
+
+        if (is_array($row)) return $row[0];
 
         if (!$row) return false;
-
-        return $row[0];
     }
 
     public function get_user_by_admin($url_address)
     {
-        $db = Database::getInstance();      // Database instance
+
+
+        $db = Database::newInstance();      // Database instance
 
         $query = "SELECT * FROM users WHERE url_address = :url limit 1";
         $row = $db->read($query, [':url' => $url_address]);

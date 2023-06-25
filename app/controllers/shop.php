@@ -6,6 +6,14 @@ use app\models\User;
 
 class Shop extends Controller
 {
+    public $limit = 3;
+    public $offset;
+    public function __construct()
+    {
+        // get page offset
+        $this->offset = Pagination::get_offset($this->limit);
+    }
+
     public function index()
     {
         $search = false;
@@ -26,9 +34,9 @@ class Shop extends Controller
 
         // Get featured items
         if ($search) {
-            $featured_items = $product->featured_items(addslashes($_GET['find']));
+            $featured_items = $product->featured_items(addslashes($_GET['find']), $this->limit, $this->offset);
         } else {
-            $featured_items = $product->featured_items();
+            $featured_items = $product->featured_items(null, $this->limit, $this->offset);
         }
 
         // resize image

@@ -34,30 +34,21 @@ class Post extends Controller
             $blogs = $blog->get_single_blog($url_address);
         }
 
+
         if ($blogs) {
+            $blogs[0]->name = $user->get_user_by_admin($blogs[0]->user_url)->name;
             $blogs[0]->image = ROOT . $image_class->get_thumb_blog_post($blogs[0]->image);
         }
 
 
-        // show($slider->get_all());
-        // die;
         // Data to send to view
 
         $data['page_title'] = 'Post Unknown';
         $data['user_data'] = $row;
         $data['show_search'] = true;
-        $data['blogs'] = $blogs;
+        $data['blogs'] = $blogs[0];
         $data['categories'] = $category->get_active_cat();
-        // $data = [
-        //     'page_title' => 'Home',
-        //     //'SETTINGS' => $this->get_all_setting_as_object(),
-        //     'user_data' => $row,
-        //     'featured_items' => $featured_items,
-        //     'categories' => $category->get_active_cat(),
-        //     'sliders' => $sliders,
-        //     'show_search' => true,
-        // ];
 
-        $this->view("single_blog", $data);
+        $this->view("single_post", $data);
     }
 }

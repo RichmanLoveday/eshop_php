@@ -75,6 +75,9 @@ const add_to_cart = function (e) {
 }
 
 featuresItem ?. addEventListener('click', add_to_cart);
+document.querySelector('.recommended-items') ?. addEventListener('click', function () {
+    console.log('sss')
+});
 
 
 const increase_quantity = function (e) {

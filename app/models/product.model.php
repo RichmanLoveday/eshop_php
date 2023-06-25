@@ -191,15 +191,15 @@ class Product extends Models
     }
 
 
-    public function featured_items($find = null)
+    public function featured_items($find = null, $limit, $offset)
     {
         $db = Database::newInstance();
         $rows = '';
         if ($find) {
-            $query = "SELECT * FROM products WHERE description like :description";
+            $query = "SELECT * FROM products WHERE description like :description limit $limit offset $offset";
             $rows = $db->read($query, ['description' => '%' . $find . '%']);
         } else {
-            $query = "SELECT * FROM products";
+            $query = "SELECT * FROM products limit $limit offset $offset";
             $rows = $db->read($query);
         }
 
@@ -210,11 +210,15 @@ class Product extends Models
     }
 
 
-    public function get_products_by_cat_id($cat_id)
+    public function get_products_by_cat_id($cat_id, $type = null)
     {
         $db = Database::newInstance();
 
-        $query = "SELECT * FROM products WHERE category = :cat_id ";
+        if ($type == 'segment') {
+            $query = "SELECT * FROM products WHERE category = :cat_id order by rand() limit 5";
+        } else {
+            $query = "SELECT * FROM products WHERE category = :cat_id ";
+        }
         $rows = $db->read($query, ['cat_id' => $cat_id]);
 
         if (empty($rows)) return false;
@@ -233,6 +237,17 @@ class Product extends Models
         if (is_array($row)) {
             return $row[0];
         }
+    }
+
+    public function get_random_product()
+    {
+        $db = Database::newInstance();
+        $query = "SELECT * FROM products WHERE rand() limit 3 ";
+        $result = $db->read($query);
+
+        if (!$result) return false;
+
+        return $result;
     }
 
 
