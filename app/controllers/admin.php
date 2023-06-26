@@ -7,12 +7,14 @@ use app\models\User;
 class Admin extends Controller
 {
 
-    public $limit = 2;
+    public $limit = 3;
     public $offset;
+    public $page_num;
     public function __construct()
     {
         // get page offset
-        $this->offset = Pagination::get_offset($this->limit);
+        $this->offset = Pagination::get_offset($this->limit)[0];
+        $this->page_num = Pagination::get_offset($this->limit)[1];
     }
 
     public function index()
@@ -50,7 +52,7 @@ class Admin extends Controller
 
         // Load categories 
         $category = $this->load_model('Category');
-        $cats_all = $category->get_all_data('categories');
+        $cats_all = $category->get_all_data('categories', $this->limit, $this->offset);
         $cats_some = $category->get_active_cat();
 
         // load category table
@@ -85,11 +87,15 @@ class Admin extends Controller
 
         // Load products
         $products = $this->load_model('product');
-        $products_data = $products->get_all_data('products');
+        $products_data = $products->get_all_products($this->limit, $this->offset);
 
         // Load categories
         $category = $this->load_model('Category');
         $category_data = $category->get_active_cat();
+
+        // load brands
+        $brand = $this->load_model('Brand');
+        $brand_data = $brand->get_active_brand();
 
         // show($category_data);
         // die;
@@ -105,7 +111,9 @@ class Admin extends Controller
             'current_page' => 'products',
             'user_data' => $row,
             'categories' => (!$category_data) ? 'No category found' : $category_data,
+            'brands' => (!$brand_data) ? 'No brand found' : $brand_data,
             'table_row' => !empty($table_row) ? $table_row : 'No record found',
+            'page_num' => $this->page_num,
         ];
 
         $this->view("admin/products", $data);
@@ -125,7 +133,7 @@ class Admin extends Controller
 
 
         // get orders details
-        $orders = $order->get_all_orders();
+        $orders = $order->get_all_orders($this->limit, $this->offset);
 
         if (is_array($orders)) {
             // get orders details

@@ -1,14 +1,14 @@
 <?php
 class Pagination
 {
-    public static function get_offset($limit)
+    public static function get_offset($limit, $page_num = 1)
     {
         $limit = (int) $limit;
-        $page_num = isset($_GET['pg']) ? (int) $_GET['pg'] : 1;
+        $page_num = isset($_GET['pg']) ? (int) $_GET['pg'] : $page_num;
         $page_num = $page_num < 1 ? 1 : $page_num;
         $offset = ($page_num - 1) * $limit;
 
-        return $offset;
+        return [$offset, $page_num];
     }
 
     public static function generate($number)
@@ -60,9 +60,8 @@ class Pagination
 ?>
         <div class="text-center">
             <ul class="pagination">
-                <?php if ($cur > 1) : ?>
-                    <li><a href="<?= self::links()->prev ?>">Prev</a></li>
-                <?php endif; ?>
+                <li><a href="<?= self::links()->prev ?>">Prev</a></li>
+
                 <?php for ($i = $cur; $i < $max; $i++) : ?>
                     <li class="<?= (self::links()->current == $i) ? 'active' : '' ?>"><a href="<?= self::generate($i) ?>"><?= $i ?></a>
                     </li>

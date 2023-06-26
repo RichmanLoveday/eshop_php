@@ -22,10 +22,10 @@ class Models
     }
 
     // GET all data
-    public function get_all_data(string $table)
+    public function get_all_data(string $table, $limit = 10, $offset = 0)
     {
         $DB = Database::newInstance();
-        $query = "SELECT * FROM $table ORDER BY id DESC";
+        $query = "SELECT * FROM $table ORDER BY id DESC limit $limit offset $offset";
         $data = $DB->read($query);
 
         if (!$data) return false;

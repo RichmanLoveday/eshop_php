@@ -131,12 +131,17 @@ class Orders extends Models
     }
 
 
-    public function get_all_orders()
+    public function get_all_orders($limit, $offsets, $find = null)
     {
         $DB = Database::newInstance();      // Database connection
 
-        $query = "SELECT * FROM orders ORDER BY id DESC limit 100";
-        $orders = $DB->read($query);
+        if (is_null($find)) {
+            $query = "SELECT * FROM orders ORDER BY id DESC limit $limit offset $offsets";
+            $orders = $DB->read($query);
+        } else {
+            $query = "SELECT * FROM orders ORDER BY id DESC limit $limit offset $offsets";
+            $orders = $DB->read($query);
+        }
 
         // check if orders is array
         return (is_array($orders)) ? $orders : false;

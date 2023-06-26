@@ -79,6 +79,11 @@ const show_modal = function (modal, input = null) {
             (option.textContent === input.data.category) ? option.selected = true : '';
         });
 
+        Object.values(input.productBrand.options).forEach(option => {
+            (option.textContent === input.data.brand) ? option.selected = true : '';
+        });
+
+
         input.productId.dataset.rowid = input.data.id;
         input.productName.value = input.data.description;
 
@@ -122,7 +127,7 @@ const close_modal = function (modal, overlay, input = null,) {
         console.log(input);
         if (input !== null) {
             Object.values(input).forEach((input, index) => {
-                if (index !== 8) { // clear value
+                if (index !== 9) { // clear value
                     input.value = '';
                     input.classList.remove('errInput');
                 } else {
@@ -189,6 +194,7 @@ const send_data_files = async function (url, data, handle_result) {
     spinner();
     const res = await axios.post(url, data, {"Content-Type": "multipart/form-data"});
 
+    // console.log(res.data);
     if (res) {
         closeSpinner();
         console.log(res);
@@ -201,8 +207,9 @@ const send_data_files = async function (url, data, handle_result) {
 const get_data = async function (url, data = {}) {
     console.log(data);
     const res = await axios.post(url, data, {"Content-Type": "multipart/form-data"});
+    // console.log(res.data)
     return res.data;
-    // handle_result(res.data);
+    handle_result(res.data);
 };
 
 
@@ -210,6 +217,7 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) { // 
     console.log(input);
     if (data_type === 'add_category') {
         const url = e.target.dataset.url;
+        const page_num = e.target.dataset.page_num;
         const parent = input.parent.value;
         let category;
         let err = false;
@@ -242,6 +250,7 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) { // 
 
     if (data_type === 'add_product') {
         const url = e.target.dataset.url;
+        const page_num = e.target.dataset.page_num;
         const form = new FormData(); // Form data
         console.log(url);
         console.log(input)
@@ -271,6 +280,15 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) { // 
             input.productCategory.classList.remove('errInput');
         }
 
+        if (input.productBrand.value.trim() === '') {
+            input.productBrand.classList.add('errInput')
+            err = true;
+
+        } else {
+            input.productBrand.classList.remove('errInput');
+        }
+
+
         if (input.productPrice.value.trim() === '') {
             input.productPrice.classList.add('errInput')
             err = true;
@@ -294,8 +312,10 @@ const collect_data = function (input, errMsg, data_type, handle_result, e) { // 
             form.append('description', input.productName.value.trim());
             form.append('quantity', input.productQuantity.value.trim());
             form.append('category', input.productCategory.value.trim());
+            form.append('brand', input.productBrand.value.trim());
             form.append('price', input.productPrice.value.trim());
             form.append('image', input.productImage.files[0]);
+            form.append('page_num', page_num);
             form.append('data_type', 'add_product');
 
             // Check other images
@@ -364,6 +384,7 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
 
 
     if (data_type === 'edit_product') {
+        const page_num = e.target.dataset.page_num;
         console.log(url);
         console.log(input);
         console.log(errMsg)
@@ -401,6 +422,15 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
             input.productCategory.classList.remove('errInput');
         }
 
+        if (input.productBrand.value.trim() === '') {
+            input.productBrand.classList.add('errInput')
+            err = true;
+
+        } else {
+            input.productBrand.classList.remove('errInput');
+        }
+
+
         if (input.productPrice.value.trim() === '') {
             input.productPrice.classList.add('errInput')
             err = true;
@@ -421,8 +451,10 @@ const collect_edit_data = function (url, input, data_type, errMsg, handle_result
             data.append('description', input.productName.value.trim());
             data.append('quantity', input.productQuantity.value.trim());
             data.append('category', input.productCategory.value.trim());
+            data.append('brand', input.productBrand.value.trim());
             data.append('price', input.productPrice.value.trim());
             data.append('image', input.productImage.files[0]);
+            data.append('page_num', page_num);
             data.append('data_type', data_type);
 
             // Check other images

@@ -7,18 +7,38 @@ use app\models\User;
 class Ajax_product extends Controller
 {
 
+    public $limit = 3;
+    public $offset;
+    public $page_num;
+    public $fetch;
+
+    public function __construct()
+    {
+        $this->fetch = file_get_contents("php://input");         // Get input files
+        $this->fetch = json_decode($this->fetch);
+        // check if type != get
+        if (!(is_object($this->fetch))) {
+            $this->fetch = (object) $_POST;
+        }
+
+        // get page offset
+        $pagination = Pagination::get_offset($this->limit, $this->fetch->page_num ?? 1);
+        $this->offset = $pagination[0];
+        $this->page_num = $pagination[1];
+    }
+
     public function index()
     {
         // Collect data from axios or ajax
-        $fetch = '';
-        $fetch =  file_get_contents("php://input");         // Get input files
-        $fetch = json_decode($fetch);
+        // $fetch = '';
+        // $fetch =  file_get_contents("php://input");         // Get input files
+        // $fetch = json_decode($fetch);
 
 
-        // check if type != get
-        if (!(is_object($fetch))) {
-            $fetch = (object) $_POST;
-        }
+        // // check if type != get
+        // if (!(is_object($fetch))) {
+        //     $fetch = (object) $_POST;
+        // }
 
 
         // show($_FILES);
@@ -26,14 +46,15 @@ class Ajax_product extends Controller
         $data = [];
 
         // Add product controller+
-        if (is_object($fetch) && isset($fetch->data_type)) {
+        if (is_object($this->fetch) && isset($this->fetch->data_type)) {
             $product = $this->load_model('product');
             $image_class = $this->load_model('Image');
+            $brand = $this->load_model('brand');
 
-            if ($fetch->data_type === 'add_product') {
+            if ($this->fetch->data_type === 'add_product') {
                 // add new product
                 // load model
-                $cats = $product->create($fetch, $_FILES, $image_class);
+                $cats = $product->create($this->fetch, $_FILES, $image_class);
 
                 if (!$cats) {
                     $data['message'] = $product->errors;
@@ -46,8 +67,10 @@ class Ajax_product extends Controller
 
                 if ($cats) {
                     $data = [];
-                    $cats = $product->get_all_data('products');
+                    $cats = $product->get_all_data('products', $this->limit, $this->offset);
 
+                    // show($cats);
+                    // die;
                     // Data to be sent to javascript
                     $data['data'] = $product->make_table($cats);
                     $data['message'] = $product->success_message;
@@ -60,13 +83,16 @@ class Ajax_product extends Controller
             }
 
             // Edit product
-            if ($fetch->data_type === 'get_product_data') {
-                //show($fetch); die;
-                $id = $fetch->id;
+            if ($this->fetch->data_type === 'get_product_data') {
+                $id = $this->fetch->id;
                 $product_data = $product->get_single_data('products', $id);
 
                 // get cat single data
                 $cats = $product->get_single_data('categories', $product_data->category);
+
+                // get brand single data
+                $brands = $brand->get_single_data('brands', $product_data->brand);
+
                 //show($product_data); die;
                 if ($product_data) {
                     $data = [];
@@ -74,6 +100,7 @@ class Ajax_product extends Controller
                     $data['id'] = $product_data->id;
                     $data['description'] = $product_data->description;
                     $data['category'] = $cats->category;
+                    $data['brand'] = $brands->brand;
                     $data['price'] = $product_data->price;
                     $data['quantity'] =  $product_data->quantity;
                     $data['image'] =  $product_data->image;
@@ -84,12 +111,12 @@ class Ajax_product extends Controller
                 echo json_encode($data);
             }
 
-            if ($fetch->data_type === 'edit_product') {
+            if ($this->fetch->data_type === 'edit_product') {
                 // add new product
                 // load model
-                // show($fetch);
+                // show($this->fetch);
                 // die;
-                $cats = $product->edit($fetch, $_FILES, $image_class);
+                $cats = $product->edit($this->fetch, $_FILES, $image_class);
 
                 if (!$cats) {
                     $data['message'] = $product->errors;
@@ -101,7 +128,7 @@ class Ajax_product extends Controller
 
                 if ($cats) {
                     $data = [];
-                    $products = $product->get_all_data('products');
+                    $products = $product->get_all_products($this->limit, $this->offset);
 
                     // Data to be sent to javascript
                     $data['data'] = $product->make_table($products);
@@ -114,11 +141,11 @@ class Ajax_product extends Controller
             }
 
 
-            if ($fetch->data_type === 'delete_product') {
+            if ($this->fetch->data_type === 'delete_product') {
                 // add new product
                 // load model
 
-                $result = $product->delete($fetch->id);
+                $result = $product->delete($this->fetch->id);
 
                 if (!$result) {
                     $data['message'] = $product->errors;
@@ -130,7 +157,7 @@ class Ajax_product extends Controller
 
                 if ($result) {
                     $data = [];
-                    $products = $product->get_all_data('products');
+                    $products = $product->get_all_data('products', $this->limit, $this->offset);
 
                     // Data to be sent to javascript
                     $data['data'] = $product->make_table($products);

@@ -8,10 +8,12 @@ class Home extends Controller
 {
     public $limit = 10;
     public $offset;
+    public $page_num;
     public function __construct()
     {
         // get page offset
-        $this->offset = Pagination::get_offset($this->limit);
+        $this->offset = Pagination::get_offset($this->limit)[0];
+        $this->page_num = Pagination::get_offset($this->limit)[1];
     }
 
     public function index()

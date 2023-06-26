@@ -15,6 +15,7 @@ class Product extends Models
         $arr['description'] = ucwords($DATA->description);
         $arr['quantity'] = ucwords($DATA->quantity);
         $arr['category'] = ucwords($DATA->category);
+        $arr['brand'] = (int) $DATA->brand;
         $arr['price'] = ucwords($DATA->price);
         $arr['date'] = date("Y-m-d H:i:s");
         $arr['user_url'] = $_SESSION['USER']->url_address;
@@ -89,7 +90,7 @@ class Product extends Models
 
         // If no error at all insert 
         if (!$error) {
-            $query = "INSERT INTO products (description, price, quantity, category, date, user_url, image, image2, image3, image4, slag) values (:description, :price, :quantity, :category, :date, :user_url, :image, :image2, :image3, :image4, :slag)";
+            $query = "INSERT INTO products (description, price, quantity, category, brand, date, user_url, image, image2, image3, image4, slag) values (:description, :price, :quantity, :category, :brand, :date, :user_url, :image, :image2, :image3, :image4, :slag)";
             $check = $DB->write($query, $arr);
 
             // check if query ran
@@ -112,6 +113,8 @@ class Product extends Models
         $arr['quantity'] = ucwords($DATA->quantity);
         $arr['price'] = ucwords($DATA->price);
         $arr['category'] = $DATA->category;
+        $arr['brand'] = (int) $DATA->brand;
+
 
         $error = false;
         // check if theirs an error in input
@@ -166,7 +169,7 @@ class Product extends Models
             }
         }
 
-        $query = "UPDATE products SET description = :description, quantity = :quantity, category = :category, price = :price, image = :image, image2 = :image2, image3 = :image3, image4 = :image4 WHERE id = :id limit 1";
+        $query = "UPDATE products SET description = :description, quantity = :quantity, category = :category, brand = :brand, price = :price, image = :image, image2 = :image2, image3 = :image3, image4 = :image4 WHERE id = :id limit 1";
         $check = $DB->write($query, $arr);
 
         if (!$check) return false;
@@ -209,6 +212,16 @@ class Product extends Models
         return $rows;
     }
 
+    public function get_all_products($limit, $offset)
+    {
+        $db = Database::newInstance();
+        $query = "SELECT products.*, brands.brand as brand_name FROM products join brands on brands.id = products.brand order by products.id desc limit $limit offset $offset";
+        $result = $db->read($query);
+
+        if (!$result) return false;
+
+        return $result;
+    }
 
     public function get_products_by_cat_id($cat_id, $type = null)
     {
@@ -271,6 +284,7 @@ class Product extends Models
                     '<tr>
                     <td><a href="#">' . $product_row->description . '</a></td>
                     <td><a href="#">' . $one_cat->category . '</a></td>
+                    <td><a href="#">' . $product_row->brand_name . '</a></td>
                     <td><a href="#">' . $product_row->quantity . '</a></td>
                     <td><a href="#">' . $product_row->price . '</a></td>
                     <td><a href="#">' . date("jS M, Y H:i:s", strtotime($product_row->date)) . '</a></td>

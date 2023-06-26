@@ -14,6 +14,7 @@ const input = {
     productName: document.querySelector('.product_name'),
     productQuantity: document.querySelector('.quantity'),
     productCategory: document.querySelector('.category'),
+    productBrand: document.querySelector('.brand'),
     productPrice: document.querySelector('.price'),
     productImage: document.querySelector('.image'),
     productImage2: document.querySelector('.image2'),
@@ -29,6 +30,8 @@ const editInput = {
     productName: document.querySelector('.edit_product_name'),
     productQuantity: document.querySelector('.edit_quantity'),
     productCategory: document.querySelector('.edit_category'),
+    productBrand: document.querySelector('.edit_brand'),
+    productBrand: document.querySelector('.edit_brand'),
     productPrice: document.querySelector('.edit_price'),
     productImage: document.querySelector('.edit_image'),
     productImage2: document.querySelector('.edit_image2'),
@@ -219,6 +222,7 @@ const edit_product_row = async function (e) { // console.log(e);
         type: 'get',
         data_type: 'get_product_data'
     });
+
 
     editInput.data = data;
     // add data to editInput object
