@@ -27,16 +27,37 @@ function print_error(array $data, string $errType)
     }
 }
 
-function get_var(string $key, $default = NULL)
+function get_var(string $name, $default = NULL)
 {
-    if (isset($_POST[$key])) {
-        return $_POST[$key];
-    } elseif (isset($_GET[$key])) {
-        return $_GET[$key];
+    if (isset($_POST[$name])) {
+        return $_POST[$name];
+    } elseif (isset($_GET[$name])) {
+        return $_GET[$name];
     }
     return $default;
 }
 
+function selected(string $key, $value): string
+{
+    if (isset($_POST[$key]) && $_POST[$key] == $value) {
+        return "selected";
+    } elseif (isset($_GET[$key]) && $_GET[$key] == $value) {
+        return "selected";
+    }
+
+    return '';
+}
+
+function checkbox($name, $value): string
+{
+    if (isset($_POST[$name]) && $_POST[$name] == $value) {
+        return "checked";
+    } elseif (isset($_GET[$name]) && $_GET[$name] == $value) {
+        return "checked";
+    }
+
+    return "";
+}
 
 function esc($data)
 {

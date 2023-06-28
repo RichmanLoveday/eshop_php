@@ -76,6 +76,9 @@ class Admin extends Controller
 
     public function products()
     {
+
+        $search = isset($_GET['search']) ? true : false;
+
         $data = [];
 
         $url = Auth::logged_in();
@@ -83,18 +86,63 @@ class Admin extends Controller
 
         //  Load user data
         $user = $this->load_model('User');                // Load user model
+        $brand = $this->load_model('Brand');
         $row = $user->get_user_row($url);
 
         // Load products
         $products = $this->load_model('product');
-        $products_data = $products->get_all_products($this->limit, $this->offset);
+
+        // check for search
+        if ($search) {
+            // loop to check for needed datas
+            if (isset($_GET['description']) && trim(htmlspecialchars($_GET['description'])) != '') {
+                $search_datas['description'] = $_GET['description'];
+            }
+
+            if (isset($_GET['category']) && trim(htmlspecialchars($_GET['category'])) != '') {
+                $search_datas['category'] = $_GET['category'];
+            }
+
+            if (isset($_GET['min-price']) && $_GET['min-price'] > 0) {
+                $search_datas['min_price']  = (float) $_GET['min-price'];
+                $search_datas['max_price']  = (float) $_GET['max-price'];
+            }
+
+            if (isset($_GET['min-qty']) && $_GET['min-qty'] > 0) {
+                $search_datas['min_qty']  = (int) $_GET['min-qty'];
+                $search_datas['max_qty']  = (int) $_GET['max-qty'];
+            }
+
+
+            // $search_datas['min-qty'] = $_GET['min-qty'];
+            // $search_datas['max-qty'] = $_GET['max-qty'];
+            // $search_datas['year'] = $_GET['year'];
+
+            // for brand
+
+            foreach ($_GET as $key => $search_row) {
+                if (strstr($key, 'brand-')) {
+                    $search_datas['brands'][$key] = $search_row;
+                }
+            }
+
+            $products_data = $products->get_product_by_search($search_datas ?? [], $this->limit, $this->offset);
+        } else {
+            $products_data = $products->get_all_products($this->limit, $this->offset);
+        }
+
+        // adding page num 
+        if (isset($products_data) && is_array($products_data)) {
+            foreach ($products_data as $key => $value) {
+                $products_data[$key]->page_num = $this->page_num;
+            }
+        }
 
         // Load categories
         $category = $this->load_model('Category');
         $category_data = $category->get_active_cat();
 
         // load brands
-        $brand = $this->load_model('Brand');
         $brand_data = $brand->get_active_brand();
 
         // show($category_data);

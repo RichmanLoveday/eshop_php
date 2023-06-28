@@ -212,10 +212,63 @@ class Product extends Models
         return $rows;
     }
 
-    public function get_all_products($limit, $offset)
+    public function get_all_products($limit, $offset, $search = null)
     {
         $db = Database::newInstance();
-        $query = "SELECT products.*, brands.brand as brand_name FROM products join brands on brands.id = products.brand order by products.id desc limit $limit offset $offset";
+        $query = "SELECT prod.*, cat.category as cat_name, brands.brand as brand_name FROM products as prod join brands on brands.id = prod.brand join categories as cat on cat.id = prod.category order by prod.id = prod.category desc limit $limit offset $offset";
+
+        $result = $db->read($query);
+
+        if (!$result) return false;
+
+        return $result;
+    }
+
+
+    public function get_product_by_search(array $search, $limit, $offset)
+    {
+        $db = Database::newInstance();
+        $query = '';
+        $query .= "SELECT prod.*, cat.category as cat_name, brands.brand as brand_name FROM products as prod join brands on brands.id = prod.brand join categories as cat on cat.id = prod.category ";
+
+
+        if (count($search) > 0) {
+            $query .= " where ";
+        }
+
+        if (isset($search['description'])) {
+            $query .= " prod.description like '%$search[description]%' and ";
+        }
+
+        if (isset($search['category']) && $search['category'] != '---Any category---') {
+            $query .= " prod.category like '%$search[category]%' and ";
+        }
+
+        if (isset($search['year']) && $search['year'] != '---Select year---') {
+            $query .= " Year(prod.date) = '$search[year]' and ";
+        }
+
+        if (isset($search['min_price']) && isset($search['max_price'])) {
+            $query .= " prod.price between $search[min_price] and $search[max_price] and ";
+        }
+
+        if (isset($search['min_qty']) && isset($search['max_qty'])) {
+            $query .= " prod.price between $search[min_qty] and $search[max_qty] and ";
+        }
+
+        // for brand 
+        if (isset($search['brands']) && is_array($search['brands'])) {
+            $query .= " brands.id in (" . trim(implode(',', $search['brands']), ',') . ") and ";
+        }
+
+
+        $query = trim($query);
+        $query = trim($query, 'and');
+
+
+        $query .= " order by prod.id = prod.category desc limit $limit offset $offset ";
+
+
         $result = $db->read($query);
 
         if (!$result) return false;
@@ -228,7 +281,7 @@ class Product extends Models
         $db = Database::newInstance();
 
         if ($type == 'segment') {
-            $query = "SELECT * FROM products WHERE category = :cat_id order by rand() limit 5";
+            $query = "SELECT * FROM products WHERE category = :cat_id order by rand() limit 3";
         } else {
             $query = "SELECT * FROM products WHERE category = :cat_id ";
         }
@@ -264,10 +317,8 @@ class Product extends Models
     }
 
 
-
     public function make_table($product)
     {
-
         $url =  ROOT  . 'ajax_product';
         $result = '';
 
@@ -276,14 +327,15 @@ class Product extends Models
             foreach ($product as $product_row) {
                 // Loop throgh to get rows"
                 //$state = $product_row->disabled  ? "'Disabled'" : "'Enabled'";
-                $id = $product_row->id;
-                $one_cat = $this->get_one_data('categories', 'id', $product_row->category);
+                // $one_cat = $this->get_one_data('categories', 'id', $product_row->category);
                 //show($one_cat); die;
                 // $current_state = $product_row->disabled ? 'label-warning' : 'label-info';
+
+                $id = $product_row->id;
                 $result .=
                     '<tr>
                     <td><a href="#">' . $product_row->description . '</a></td>
-                    <td><a href="#">' . $one_cat->category . '</a></td>
+                    <td><a href="#">' . $product_row->cat_name . '</a></td>
                     <td><a href="#">' . $product_row->brand_name . '</a></td>
                     <td><a href="#">' . $product_row->quantity . '</a></td>
                     <td><a href="#">' . $product_row->price . '</a></td>
@@ -291,7 +343,7 @@ class Product extends Models
                     <td><a href="#"><img src="' . ROOT . $product_row->image . '" style="width: 50px; height: 50px;"></a></td>
                     <td>
                         <button data-rowId="' . $id . '" data-rowUrl="' . $url . '" class="btn btn-primary btn-xs editProduct" style="outline: none;"><i class="fa fa-pencil" style="pointer-events:none;"></i></button>
-                        <button data-rowId="' . $product_row->id . '" data-rowUrl="' . $url . '" data-productname="' . $product_row->description . '" class="btn btn-danger btn-xs deleteProduct" style="outline: none;"><i class="fa fa-trash-o " style="pointer-events:none;"></i></button>
+                        <button data-rowId="' . $product_row->id . '" data-rowUrl="' . $url . '" data-page_num="' . $product_row->page_num . '" data-productname="' . $product_row->description . '" class="btn btn-danger btn-xs deleteProduct" style="outline: none;"><i class="fa fa-trash-o " style="pointer-events:none;"></i></button>
                     </td>
                 </tr>';
             }

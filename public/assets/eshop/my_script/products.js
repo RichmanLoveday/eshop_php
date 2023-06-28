@@ -262,6 +262,8 @@ const delete_product_row = function (e) {
 
     const url = e.target.dataset.rowurl;
     const id = e.target.dataset.rowid;
+    const page_num = e.target.dataset.page_num;
+
     console.log(url);
     console.log(Swal);
     Swal.fire({
@@ -277,6 +279,7 @@ const delete_product_row = function (e) {
         if (result.isConfirmed) { // data sent to php
             send_data(url, {
                 id: id,
+                page_num: page_num,
                 data_type: 'delete_product'
             }, handle_result);
         }

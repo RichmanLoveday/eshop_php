@@ -67,8 +67,11 @@ class Ajax_product extends Controller
 
                 if ($cats) {
                     $data = [];
-                    $cats = $product->get_all_data('products', $this->limit, $this->offset);
+                    $cats = $product->get_all_products($this->limit, $this->offset);
 
+                    foreach ($cats as $key => $value) {
+                        $cats[$key]->page_num = $this->page_num;
+                    }
                     // show($cats);
                     // die;
                     // Data to be sent to javascript
@@ -157,7 +160,12 @@ class Ajax_product extends Controller
 
                 if ($result) {
                     $data = [];
-                    $products = $product->get_all_data('products', $this->limit, $this->offset);
+                    $products = $product->get_all_products($this->limit, $this->offset);
+
+                    foreach ($products as $key => $value) {
+                        $products[$key]->page_num = $this->page_num;
+                    }
+
 
                     // Data to be sent to javascript
                     $data['data'] = $product->make_table($products);
