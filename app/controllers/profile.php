@@ -44,6 +44,9 @@ class Profile extends Controller
         }
 
 
+        // show($orders);
+        // die;
+
         // Data to send to view
         $data = [
             'page_title' => 'Profile',

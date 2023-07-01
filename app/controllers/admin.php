@@ -94,39 +94,7 @@ class Admin extends Controller
 
         // check for search
         if ($search) {
-            // loop to check for needed datas
-            if (isset($_GET['description']) && trim(htmlspecialchars($_GET['description'])) != '') {
-                $search_datas['description'] = $_GET['description'];
-            }
-
-            if (isset($_GET['category']) && trim(htmlspecialchars($_GET['category'])) != '') {
-                $search_datas['category'] = $_GET['category'];
-            }
-
-            if (isset($_GET['min-price']) && $_GET['min-price'] > 0) {
-                $search_datas['min_price']  = (float) $_GET['min-price'];
-                $search_datas['max_price']  = (float) $_GET['max-price'];
-            }
-
-            if (isset($_GET['min-qty']) && $_GET['min-qty'] > 0) {
-                $search_datas['min_qty']  = (int) $_GET['min-qty'];
-                $search_datas['max_qty']  = (int) $_GET['max-qty'];
-            }
-
-
-            // $search_datas['min-qty'] = $_GET['min-qty'];
-            // $search_datas['max-qty'] = $_GET['max-qty'];
-            // $search_datas['year'] = $_GET['year'];
-
-            // for brand
-
-            foreach ($_GET as $key => $search_row) {
-                if (strstr($key, 'brand-')) {
-                    $search_datas['brands'][$key] = $search_row;
-                }
-            }
-
-            $products_data = $products->get_product_by_search($search_datas ?? [], $this->limit, $this->offset);
+            $products_data = $products->get_product_by_search(Search::advance_search($_GET), $this->limit, $this->offset);
         } else {
             $products_data = $products->get_all_products($this->limit, $this->offset);
         }

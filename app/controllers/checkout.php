@@ -65,7 +65,6 @@ class Checkout extends Controller
         // sort the products and countries in asc order 
         if (is_array($products)) rsort($products);
 
-
         // check if old data exist in session
         if (isset($_SESSION['POST_DATA'])) {
             $data['POST_DATA'] = $_SESSION['POST_DATA'];
@@ -109,6 +108,7 @@ class Checkout extends Controller
         $checkout = $this->load_model('Orders');
         $cart = $this->load_model('CartModel');
         $countries = $this->load_model('Countries');
+        $user_m = $this->load_model('user');
 
         $data = [];
 
@@ -153,16 +153,16 @@ class Checkout extends Controller
 
 
         // check for post variables 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['POST_DATA'])) {
-            // check if user_id is ready or session_id
-            $user_id = (Auth::logged_in()) ? Auth::logged_in()->url_address : 0;
-            $session_id = session_id();
+        // if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['POST_DATA'])) {
+        //     // check if user_id is ready or session_id
+        //     $user_id = (Auth::logged_in()) ? Auth::logged_in()->url_address : 0;
+        //     $session_id = session_id();
 
-            $checkout->save_orders($_SESSION['POST_DATA'], $products, $user_id, $session_id, $countries);
+        //     $checkout->save_orders($_SESSION['POST_DATA'], $products, $user_id, $session_id, $countries);
 
-            //  redirect to thank you page
-            $this->redirect('checkout/thank_you');
-        }
+        //     //  redirect to thank you page
+        //     $this->redirect('checkout/thank_you');
+        // }
 
         // show($products);
         // die;
@@ -170,13 +170,18 @@ class Checkout extends Controller
         // show($data['orders']);
         // die;
 
+        $data['user_data'] = $user_m->get_user_row($_SESSION['USER']);
+        $data['description'] = "Order Number " . get_order_id();
         $data['page_title'] = 'Checkout Summary';
-        $data['sub_total'] =  number_format($sub_total, 2);
+        $data['sub_total'] =  $sub_total;
+        $data['ajax_url'] = ROOT . "payment";
+        // $data['redirect_success'] = ROOT . "checkout/thank_you/success";
+        // $data['redirect_error'] = ROOT . "checkout/thank_you/failed";
 
         $this->view('checkout.summary', $data);
     }
 
-    public function thank_you()
+    public function thank_you($mode = 'success')
     {
         $data = [];
 
@@ -188,9 +193,13 @@ class Checkout extends Controller
         if (empty($_SESSION['CART'])) $this->redirect('checkout');
 
         // clear post data information, cart and goto thank you page
+        if ($mode == 'failed') {
+            $data['page_title'] = 'Transaction failed';
+            $this->view('checkout.transaction_failed', $data);
+        }
+
         unset($_SESSION['POST_DATA']);
         unset($_SESSION['CART']);
-
         $data['page_title'] = 'Thank you';
 
         $this->view('checkout.thank_you', $data);

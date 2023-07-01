@@ -20,6 +20,12 @@ class Shop extends Controller
     {
         $search = false;
         if (isset($_GET['find'])) {
+            //   show($_GET);
+            $search = true;
+        }
+
+        // $search = isset($_GET['search']) ? true : false;
+        if (isset($_GET['search'])) {
             $search = true;
         }
 
@@ -36,15 +42,21 @@ class Shop extends Controller
 
         // Get featured items
         if ($search) {
-            $featured_items = $product->featured_items(addslashes($_GET['find']), $this->limit, $this->offset);
+            // if find request is seen
+            if (isset($_GET['find'])) {
+                $products_data = $product->featured_items(addslashes($_GET['find']), $this->limit, $this->offset);
+            } else {
+                // advance search
+                $products_data = $product->get_product_by_search(Search::advance_search($_GET), $this->limit, $this->offset);
+            }
         } else {
-            $featured_items = $product->featured_items(null, $this->limit, $this->offset);
+            $products_data = $product->featured_items(null, $this->limit, $this->offset);
         }
 
         // resize image
-        if ($featured_items) {
-            foreach ($featured_items as $key => $item) {
-                $featured_items[$key]->image = $image_class->get_thumb_post($featured_items[$key]->image);
+        if ($products_data) {
+            foreach ($products_data as $key => $item) {
+                $products_data[$key]->image = $image_class->get_thumb_post($products_data[$key]->image);
             }
         }
 
@@ -55,7 +67,7 @@ class Shop extends Controller
         $data = [
             'page_title' => 'Shop',
             'user_data' => $row,
-            'featured_items' => $featured_items,
+            'featured_items' => $products_data,
             'categories' => $category->get_active_cat(),
             'show_search' => true,
         ];
@@ -84,9 +96,9 @@ class Shop extends Controller
         $check = is_object($check) ? $check : null;
 
         // Get product based on category id
-        $featured_items = $product->get_products_by_cat_id($check->id);
+        $featured_items = $product->get_products_by_cat_id($check->id, null, $this->limit, $this->offset);
 
-        // resize image
+        // re
         if ($featured_items) {
             foreach ($featured_items as $key => $item) {
                 $featured_items[$key]->image = $image_class->get_thumb_post($featured_items[$key]->image);

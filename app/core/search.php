@@ -56,4 +56,37 @@ class Search extends Models
             }
         }
     }
+
+
+    public static function advance_search(array $GET)
+    {
+        // loop to check for needed datas
+        $search_datas = [];
+        if (isset($GET['description']) && trim(htmlspecialchars($GET['description'])) != '') {
+            $search_datas['description'] = $GET['description'];
+        }
+
+        if (isset($GET['category']) && trim(htmlspecialchars($GET['category'])) != '') {
+            $search_datas['category'] = $GET['category'];
+        }
+
+        if (isset($GET['min-price']) && $GET['min-price'] > 0) {
+            $search_datas['min_price']  = (float) $GET['min-price'];
+            $search_datas['max_price']  = (float) $GET['max-price'];
+        }
+
+        if (isset($GET['min-qty']) && $GET['min-qty'] > 0) {
+            $search_datas['min_qty']  = (int) $GET['min-qty'];
+            $search_datas['max_qty']  = (int) $GET['max-qty'];
+        }
+
+        // for brand
+        foreach ($GET as $key => $search_row) {
+            if (strstr($key, 'brand-')) {
+                $search_datas['brands'][$key] = $search_row;
+            }
+        }
+
+        return $search_datas;
+    }
 }

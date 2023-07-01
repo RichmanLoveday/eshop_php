@@ -1,0 +1,1 @@
+{"status":"successful","customer":{"name":"Marveleous ","email":"mave@gmail.com","phone_number":"08102909304"},"transaction_id":4440283,"tx_ref":"eshop-1688193572","flw_ref":"FLW-M03K-f228175ff90207c39f5086cc0a3e074d","currency":"NGN","amount":1103,"charged_amount":1103,"charge_response_code":"00","charge_response_message":"Approved","created_at":"2023-07-01T06:39:59.000Z"}

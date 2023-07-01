@@ -276,14 +276,14 @@ class Product extends Models
         return $result;
     }
 
-    public function get_products_by_cat_id($cat_id, $type = null)
+    public function get_products_by_cat_id($cat_id, $type = null, $limit = null, $offset = null)
     {
         $db = Database::newInstance();
 
         if ($type == 'segment') {
             $query = "SELECT * FROM products WHERE category = :cat_id order by rand() limit 3";
         } else {
-            $query = "SELECT * FROM products WHERE category = :cat_id ";
+            $query = "SELECT * FROM products WHERE category = :cat_id limit $limit offset $offset ";
         }
         $rows = $db->read($query, ['cat_id' => $cat_id]);
 
@@ -323,7 +323,6 @@ class Product extends Models
         $result = '';
 
         if (is_array($product)) {
-            //show($product); die;
             foreach ($product as $product_row) {
                 // Loop throgh to get rows"
                 //$state = $product_row->disabled  ? "'Disabled'" : "'Enabled'";

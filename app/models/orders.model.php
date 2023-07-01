@@ -83,27 +83,24 @@ class Orders extends Models
             $data['shipping'] = 0;
             $data['total'] = $total;
             $data['tax'] = 0;
-
+            $data['description'] = "Order Number " . get_order_id();
             //show($data); die;
 
-            $query = "INSERT INTO orders (user_url, delivery_address, total, country, state, tax, zip, shipping, date, session_id, home_phone, mobile_phone) values (:user_url, :delivery_address, :total, :country, :state, :tax, :zip, :shipping, :date, :session_id, :home_phone, :mobile_phone)";
+            $query = "INSERT INTO orders (description, user_url, delivery_address, total, country, state, tax, zip, shipping, date, session_id, home_phone, mobile_phone) values (:description, :user_url, :delivery_address, :total, :country, :state, :tax, :zip, :shipping, :date, :session_id, :home_phone, :mobile_phone)";
 
             $result = $DB->write($query, $data);
 
             // save details
+            // $query = "SELECT id FROM orders ORDER BY id DESC limit 1";
+            // $result = $DB->read($query);
 
-            $orderid = 0;
-            $query = "SELECT id FROM orders ORDER BY id DESC limit 1";
-            $result = $DB->read($query);
-
-            if ($result) {
-                $orderid = $result[0]->id;
-            }
-
+            // if (is_array($result)) {
+            //     $orderid = $result[0]->id;
+            // }
 
             foreach ($products as $item) {
                 $data = [];
-                $data['orderid'] = $orderid;
+                $data['orderid'] = get_order_id();
                 $data['qty'] = $item->cart_qty;
                 $data['productid'] = $item->id;
                 $data['description'] = $item->description;
@@ -112,9 +109,8 @@ class Orders extends Models
                 //show($data);
                 $query = "INSERT INTO order_details (orderid, productid, qty, description, amount, total) values (:orderid, :productid, :qty, :description, :amount, :total)";
                 $result = $DB->write($query, $data);
-
-                return $result ? true : false;
             }
+            return $result ? true : false;
         }
     }
 
@@ -157,5 +153,29 @@ class Orders extends Models
 
         // check if orders is array
         return (is_array($details)) ? $details : false;
+    }
+
+    public function payment($details, $user_id)
+    {
+        $DB = Database::newInstance();
+        $data['trans_id'] = $details->transaction_id;
+        $data['payer_id'] = $user_id;
+        $data['first_name'] = $details->customer->name;
+        $data['email'] = $details->customer->email;
+        $data['amount'] = $details->amount;
+        $data['date']  = $details->created_at;
+        $data['order_id'] = "Order Number " . get_order_id();
+        $data['raw'] = json_encode($details);
+        $data['event_type'] = 'ORDER' . $details->charge_response_message;
+        $data['status'] = $details->status;
+        $data['summary'] = "On order has been approved by buyer";
+
+        $query = "INSERT INTO payments (trans_id, summary, payer_id, first_name, email, amount, order_id, raw, event_type, status, date) values(:trans_id, :summary, :payer_id, :first_name, :email, :amount, :order_id, :raw, :event_type, :status, :date)";
+
+        $result = $DB->write($query, $data);
+
+        if ($result) return true;
+
+        return false;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use app\core\Database;
+
 function show($data)
 {
     echo "<pre>";
@@ -29,9 +31,9 @@ function print_error(array $data, string $errType)
 
 function get_var(string $name, $default = NULL)
 {
-    if (isset($_POST[$name])) {
+    if (isset($_POST[$name]) && !empty($_POST[$name])) {
         return $_POST[$name];
-    } elseif (isset($_GET[$name])) {
+    } elseif (isset($_GET[$name]) && !empty($_GET[$name])) {
         return $_GET[$name];
     }
     return $default;
@@ -62,4 +64,19 @@ function checkbox($name, $value): string
 function esc($data)
 {
     return addslashes($data);
+}
+
+
+function get_order_id()
+{
+    $orderid = 1;
+    $DB = Database::newInstance();
+    $query = "SELECT id FROM orders ORDER BY id DESC limit 1";
+    $result = $DB->read($query);
+
+    if (is_array($result)) {
+        $orderid = $result[0]->id;
+    }
+
+    return $orderid;
 }

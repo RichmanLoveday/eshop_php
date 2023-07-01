@@ -22,6 +22,12 @@ class Home extends Controller
         // check for searches
         $search = false;
         if (isset($_GET['find'])) {
+            //   show($_GET);
+            $search = true;
+        }
+
+        // $search = isset($_GET['search']) ? true : false;
+        if (isset($_GET['search'])) {
             $search = true;
         }
 
@@ -39,12 +45,22 @@ class Home extends Controller
         $row = ($USER) ? $user->get_user_row($USER) : '';
 
         // Get featured items
-        $featured_items = $product->featured_items(null, $this->limit, $this->offset);
+        if ($search) {
+            // if find request is seen
+            if (isset($_GET['find'])) {
+                $products_data = $product->featured_items(addslashes($_GET['find']), $this->limit, $this->offset);
+            } else {
+                // advance search
+                $products_data = $product->get_product_by_search(Search::advance_search($_GET), $this->limit, $this->offset);
+            }
+        } else {
+            $products_data = $product->featured_items(null, $this->limit, $this->offset);
+        }
 
         // resize image
-        if ($featured_items) {
-            foreach ($featured_items as $key => $item) {
-                $featured_items[$key]->image = $image_class->get_thumb_post($featured_items[$key]->image);
+        if ($products_data) {
+            foreach ($products_data as $key => $item) {
+                $products_data[$key]->image = $image_class->get_thumb_post($products_data[$key]->image);
             }
         }
 
@@ -80,7 +96,7 @@ class Home extends Controller
         // Data to send to view
         $data['page_title'] = 'Home';
         $data['user_data'] = $row;
-        $data['featured_items'] = $featured_items;
+        $data['featured_items'] = $products_data;
         $data['sliders'] = $sliders;
         $data['show_search'] = true;
 
