@@ -6,7 +6,7 @@ use app\models\User;
 
 class Home extends Controller
 {
-    public $limit = 10;
+    public $limit = 12;
     public $offset;
     public $page_num;
     public function __construct()
@@ -71,18 +71,8 @@ class Home extends Controller
             }
         }
 
-        // For carousel
-        $carousel_val = 3;
-        for ($i = 0; $i < $carousel_val; $i++) {
-            $slider_row[$i] = $product->get_random_product();
-            if ($slider_row[$i]) {
-                foreach ($slider_row[$i] as $key => $rows) {
-                    $slider_row[$i][$key]->image = $image_class->get_thumb_post($slider_row[$i][$key]->image);
-                }
-            }
-            $data['sliders_rows'][] = $slider_row[$i];
-        }
-
+        // recommended items carousel
+        $data['sliders_rows'] = recommended_items_carousel($product, $image_class);
 
         // get all categories
         $data['categories'] = $category->get_active_cat();
@@ -98,6 +88,7 @@ class Home extends Controller
         $data['user_data'] = $row;
         $data['featured_items'] = $products_data;
         $data['sliders'] = $sliders;
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
         $data['show_search'] = true;
 
         $this->view("index", $data);
@@ -123,7 +114,6 @@ class Home extends Controller
                 foreach ($rows as $key => $row) {
                     $rows[$key]->image = $image_class->get_thumb_post($rows[$key]->image);
                 }
-
 
                 // add to catgories
                 $result[$cat->category][] = $rows;

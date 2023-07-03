@@ -26,6 +26,17 @@ handle_result = function (result) {
                         clearInterval(timerInterval)
                     }
                 },)
+                // check for cart numbers
+                if (obj.total_cart !== null || obj.total_cart !== 0) {
+                    if (document.querySelector('.total_cart').classList.contains('hide')) {
+                        document.querySelector('.total_cart').classList.remove('hide');
+                    }
+                    document.querySelector('.total_cart').firstElementChild.textContent = obj.total_cart;
+                } else {
+                    document.querySelector('.total_cart').classList.add('hide');
+                }
+
+
             }
         }
 
@@ -46,14 +57,20 @@ handle_result = function (result) {
                 total.textContent = `$${
                     obj.products_details.sub_total
                 }`;
+
+                if (obj.total_cart == null || obj.total_cart == 0) {
+                    document.querySelector('.total_cart').classList.add('hide');
+                } else {
+                    document.querySelector('.total_cart').firstElementChild.textContent = obj.total_cart;
+                }
+
             }
         }
     }
 }
 
-const add_to_cart = function (e) {
-    // e.preventDefault();
-
+const add_to_cart = function (e) { // e.preventDefault();
+    console.log(e.target);
     // check add_class_cart
     if (! e.target.classList.contains('add-to-cart')) 
         return;
@@ -73,6 +90,29 @@ const add_to_cart = function (e) {
         data_type: 'add_to_cart'
     }, handle_result) // handle the result coming back
 }
+
+const add_to_cart2 = function (e) {
+    // e.preventDefault();
+    // console.log(e.target);
+    // check add_class_cart
+    // if (! e.target.classList.contains('add-to-cart'))
+    // return;
+
+
+    // get id, url
+    // console.log(e.target);
+    const id = e.dataset.id;
+    const url = e.dataset.url;
+    // console.log(id);
+    console.log(url);
+
+    // ajax data to php
+    send_data(url, {
+        id: id,
+        data_type: 'add_to_cart'
+    }, handle_result) // handle the result coming back
+}
+
 
 featuresItem ?. addEventListener('click', add_to_cart);
 document.querySelector('.recommended-items') ?. addEventListener('click', function () {

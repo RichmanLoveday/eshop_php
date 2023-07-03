@@ -6,7 +6,7 @@ use app\models\User;
 
 class Shop extends Controller
 {
-    public $limit = 3;
+    public $limit = 12;
     public $offset;
     public $page_num;
     public function __construct()
@@ -70,7 +70,9 @@ class Shop extends Controller
             'featured_items' => $products_data,
             'categories' => $category->get_active_cat(),
             'show_search' => true,
+            'total_cart' => isset($_SESSION['CART']) ? count($_SESSION['CART']) : null,
         ];
+
 
         $this->view("shop", $data);
     }
@@ -109,6 +111,7 @@ class Shop extends Controller
         $data['page_title'] = 'Shop';
         $data['featured_items'] = $featured_items;
         $data['categories'] = $category->get_active_cat();
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
 
         $this->view("shop", $data);
     }

@@ -48,6 +48,7 @@ class Post extends Controller
         $data['show_search'] = true;
         $data['blogs'] = $blogs[0];
         $data['categories'] = $category->get_active_cat();
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
 
         $this->view("single_post", $data);
     }

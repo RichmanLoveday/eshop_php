@@ -14,6 +14,7 @@ class Contact_us extends Controller
         // authenticate user
 
         $data['page_title'] = 'Contact Us';
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
         $data['show_search'] = false;
 
         if (count($_POST) > 0) {

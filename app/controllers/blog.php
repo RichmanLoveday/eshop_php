@@ -35,7 +35,7 @@ class Blog extends Controller
 
         if ($search) {
             $find = '%' . $_GET['find'] . '%';
-            $blogs = $blog->get_all($find);
+            $blogs = $blog->get_all($find, $this->limit, $this->offset);
         } else {
             $blogs = $blog->get_all(null, $this->limit, $this->offset);
         }
@@ -47,27 +47,13 @@ class Blog extends Controller
                 $blogs[$key]->image = ROOT . $image_class->get_thumb_blog_post($blogs[$key]->image);
             }
         }
-        // show($blogs);
-        // die;
-
-        // show($slider->get_all());
-        // die;
-        // Data to send to view
 
         $data['page_title'] = 'Blogs';
         $data['user_data'] = $row;
         $data['show_search'] = true;
         $data['blogs'] = $blogs;
         $data['categories'] = $category->get_active_cat();
-        // $data = [
-        //     'page_title' => 'Home',
-        //     //'SETTINGS' => $this->get_all_setting_as_object(),
-        //     'user_data' => $row,
-        //     'featured_items' => $featured_items,
-        //     'categories' => $category->get_active_cat(),
-        //     'sliders' => $sliders,
-        //     'show_search' => true,
-        // ];
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
 
         $this->view("blog", $data);
     }

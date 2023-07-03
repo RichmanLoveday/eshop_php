@@ -295,7 +295,7 @@ class Product extends Models
     public function single_product($slag)
     {
         $db = Database::newInstance();
-        $query = "SELECT * FROM products WHERE slag = :slag limit 1";
+        $query = "SELECT products.*, brands.brand as brand_name FROM products join brands on brands.id = products.brand WHERE slag = :slag limit 1";
         $row = $db->read($query, ['slag' => $slag]);
 
         if (!$row) return false;

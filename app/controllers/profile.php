@@ -52,6 +52,7 @@ class Profile extends Controller
             'page_title' => 'Profile',
             'user_data' => $user,
             'orders' => $orders,
+            'total_cart' => isset($_SESSION['CART']) ? count($_SESSION['CART']) : null,
         ];
 
         $this->view("profile", $data);

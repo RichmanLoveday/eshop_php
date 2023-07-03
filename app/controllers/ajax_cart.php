@@ -51,17 +51,8 @@ class Ajax_cart extends Controller
                         $data['message'] = $cart->success_message;
                         $data['message_type'] = 'info';
                         $data['data_type'] = "add_to_cart";
+                        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
                     }
-
-
-                    // $data = [];
-                    // $cats = $category->get_all_data('categories');
-
-                    // // Data to be sent to javascript
-                    // $data['data'] = $category->make_table($cats);
-                    // $data['message'] = $category->success_message;
-                    // $data['message_type'] = 'info';
-                    // $data['data_type'] = "add_new";
 
                     echo json_encode($data);
                 }
@@ -79,6 +70,7 @@ class Ajax_cart extends Controller
                     $data['products_details'] = $inc_qty;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "increase_quantity";
+                    $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
                     echo json_encode($data);
                 }
             }
@@ -93,6 +85,7 @@ class Ajax_cart extends Controller
                     $data['products_details'] = $dcr_qty;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "decrease_quantity";
+                    $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
                     echo json_encode($data);
                     die;
                 }
@@ -106,6 +99,7 @@ class Ajax_cart extends Controller
                     $data['products_details'] = $rvm_cart;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "remove_cart";
+                    $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
                     echo json_encode($data);
                     die;
                 }
@@ -121,6 +115,7 @@ class Ajax_cart extends Controller
                     $data['products_details'] = $edit_qty;
                     $data['message_type'] = 'info';
                     $data['data_type'] = "edit_quantity";
+                    $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
                     echo json_encode($data);
                     die;
                 }

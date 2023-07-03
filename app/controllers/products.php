@@ -56,6 +56,3 @@ class Products extends Controller {
         $this->view("admin/products", $data);         
     }
 }
-
-
-?>

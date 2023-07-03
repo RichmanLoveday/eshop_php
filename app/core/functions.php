@@ -80,3 +80,34 @@ function get_order_id()
 
     return $orderid;
 }
+
+function recommended_items_carousel($product, $image_class)
+{
+    $carousel_val = 3;
+    $slider_rows = [];
+    for ($i = 0; $i < $carousel_val; $i++) {
+        $slider_row[$i] = $product->get_random_product();
+        if ($slider_row[$i]) {
+            foreach ($slider_row[$i] as $key => $rows) {
+                $slider_row[$i][$key]->image = $image_class->get_thumb_post($slider_row[$i][$key]->image);
+            }
+        }
+        $slider_rows[] = $slider_row[$i];
+    }
+
+    return $slider_rows;
+}
+
+function is_paid($orders)
+{
+    $arr['amount'] = addslashes($orders->total);
+    $arr['order_id'] = addslashes($orders->description);
+
+    $DB = Database::newInstance();
+    $payment = $DB->read("SELECT * from payments where amount = :amount && order_id = :order_id limit 1", $arr);
+
+    if (is_array($payment)) {
+        return "<td><span class='badge badge-success'>Paid</span></td>";
+    }
+    return "<td><span class='badge badge-warning'>Not paid</span></td>";
+}

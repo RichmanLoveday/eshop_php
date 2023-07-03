@@ -61,6 +61,7 @@ class Cart extends Controller
             'user_data' => $row1,
             'sub_total' => number_format($sub_total, 2),
             'products' => is_array($products) ? $cart->make_table($products) : '',
+            'total_cart' => isset($_SESSION['CART']) ? count($_SESSION['CART']) : null,
         ];
 
         $this->view("cart", $data);

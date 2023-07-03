@@ -97,7 +97,8 @@ class Checkout extends Controller
         $data['sub_total'] = $sub_total;
         $data['countries'] = $countryList;
         $data['products'] = $products;
-
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
+        
         $this->view("checkout", $data);
     }
 
@@ -175,6 +176,7 @@ class Checkout extends Controller
         $data['page_title'] = 'Checkout Summary';
         $data['sub_total'] =  $sub_total;
         $data['ajax_url'] = ROOT . "payment";
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
         // $data['redirect_success'] = ROOT . "checkout/thank_you/success";
         // $data['redirect_error'] = ROOT . "checkout/thank_you/failed";
 
@@ -201,6 +203,7 @@ class Checkout extends Controller
         unset($_SESSION['POST_DATA']);
         unset($_SESSION['CART']);
         $data['page_title'] = 'Thank you';
+        $data['total_cart'] = isset($_SESSION['CART']) ? count($_SESSION['CART']) : null;
 
         $this->view('checkout.thank_you', $data);
     }

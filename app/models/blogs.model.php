@@ -87,13 +87,13 @@ class Blogs extends Models
         }
     }
 
-    public function get_all($find = null, $limit, $offset)
+    public function get_all($find = null, int $limit, $offset)
     {
         $DB = Database::newInstance();
 
-        $result  = '';
+        $result = '';
         if (is_null($find)) {
-            $query = "SELECT * FROM blogs order by id DESC limit $limit offset $offset";
+            $query = "SELECT * FROM blogs order by id DESC";
             $result = $DB->read($query);
         } else {
             $query = "SELECT * FROM blogs WHERE title like :title order by id DESC limit $limit offset $offset";
